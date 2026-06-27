@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TAKEGIRLS — Streetwear Feminino</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --brand: #9B30FF;
+    --brand-dark: #7B1FCC;
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: rgba(155,48,255,0.2);
+    --text: #ffffff;
+    --text-sec: #aaaaaa;
+    --text-muted: #666;
+  }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+
+  /* NAV */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2rem; background: rgba(10,10,10,0.95);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+  .logo { font-size: 20px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; color: #fff; }
+  .logo span { color: var(--brand); }
+  .nav-links { display: flex; gap: 1.5rem; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; }
+  .nav-links a { color: var(--text-sec); cursor: pointer; text-decoration: none; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--brand); }
+  .cart-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--brand); color: #fff; border: none; border-radius: 4px;
+    padding: 9px 18px; font-size: 12px; font-weight: 700; cursor: pointer;
+    letter-spacing: 1.5px; text-transform: uppercase; transition: background 0.2s;
+  }
+  .cart-btn:hover { background: var(--brand-dark); }
+  .cart-count {
+    background: #000; color: var(--brand); border-radius: 50%;
+    width: 18px; height: 18px; font-size: 11px; font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* PROMO */
+  .promo {
+    background: var(--brand); color: #fff; text-align: center;
+    padding: 10px 2rem; font-size: 12px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* HERO */
+  .hero {
+    background: var(--bg); padding: 5rem 2rem 4rem;
+    text-align: center; position: relative; overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -80px; left: 50%;
+    transform: translateX(-50%);
+    width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(155,48,255,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--brand); font-size: 11px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase; margin-bottom: 1.5rem;
+  }
+  .hero-eyebrow::before, .hero-eyebrow::after {
+    content: ''; width: 30px; height: 1px; background: var(--brand);
+  }
+  .hero h1 {
+    font-size: 56px; font-weight: 900; line-height: 1;
+    text-transform: uppercase; letter-spacing: -2px;
+    margin-bottom: 1rem; color: #fff;
+  }
+  .hero h1 .accent { color: var(--brand); display: block; }
+  .hero p {
+    font-size: 15px; color: var(--text-sec); max-width: 400px;
+    margin: 0 auto 2.5rem; line-height: 1.6; letter-spacing: 0.5px;
+  }
+  .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--brand); color: #fff; border: none; border-radius: 4px;
+    padding: 14px 32px; font-size: 12px; font-weight: 700; cursor: pointer;
+    letter-spacing: 2px; text-transform: uppercase; transition: background 0.2s, transform 0.1s;
+  }
+  .btn-primary:hover { background: var(--brand-dark); transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent; color: #fff;
+    border: 1px solid rgba(255,255,255,0.3); border-radius: 4px;
+    padding: 14px 32px; font-size: 12px; font-weight: 700; cursor: pointer;
+    letter-spacing: 2px; text-transform: uppercase; transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--brand); color: var(--brand); }
+
+  /* SECTION */
+  .section { padding: 3rem 2rem; }
+  .section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 1.75rem; }
+  .section-tag {
+    font-size: 10px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--brand); border: 1px solid var(--brand); padding: 4px 10px; border-radius: 2px;
+  }
+  .section-title { font-size: 20px; font-weight: 900; letter-spacing: -0.5px; text-transform: uppercase; color: #fff; }
+  .section-line { flex: 1; height: 1px; background: var(--border); }
+
+  /* CATEGORIES */
+  .categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+  .cat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 4px; padding: 1.25rem 1rem; text-align: center; cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .cat-card:hover { border-color: var(--brand); background: var(--surface2); }
+  .cat-icon { font-size: 26px; margin-bottom: 8px; }
+  .cat-name { font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #fff; }
+  .cat-count { font-size: 10px; color: var(--text-muted); margin-top: 3px; letter-spacing: 1px; }
+
+  /* FILTERS */
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .filter-btn {
+    padding: 6px 14px; border-radius: 2px; font-size: 10px; font-weight: 800;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--text-sec); cursor: pointer; transition: all 0.2s;
+    letter-spacing: 1.5px; text-transform: uppercase;
+  }
+  .filter-btn.active, .filter-btn:hover { background: var(--brand); color: #fff; border-color: var(--brand); }
+
+  /* PRODUCTS */
+  .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .product-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 4px; overflow: hidden; cursor: pointer;
+    transition: border-color 0.25s, transform 0.2s;
+  }
+  .product-card:hover { border-color: var(--brand-dark); transform: translateY(-3px); }
+  .product-img {
+    width: 100%; height: 210px; display: flex; align-items: center; justify-content: center;
+    position: relative; font-size: 60px;
+  }
+  .badge-new, .badge-sale {
+    position: absolute; top: 10px; left: 10px;
+    font-size: 9px; font-weight: 800; padding: 4px 8px; border-radius: 2px;
+    text-transform: uppercase; letter-spacing: 1.5px;
+  }
+  .badge-new { background: var(--brand); color: #fff; }
+  .badge-sale { background: #fff; color: #000; }
+  .badge-fav { position: absolute; top: 10px; right: 10px; font-size: 17px; cursor: pointer; }
+  .product-info { padding: 12px 14px 14px; border-top: 1px solid var(--border); }
+  .product-name { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; color: #fff; }
+  .product-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; letter-spacing: 0.5px; }
+  .product-footer { display: flex; align-items: center; justify-content: space-between; }
+  .product-price { font-size: 16px; font-weight: 900; color: var(--brand); }
+  .product-old { font-size: 11px; color: var(--text-muted); text-decoration: line-through; margin-top: 1px; }
+  .add-btn {
+    background: var(--brand); color: #fff; border: none; border-radius: 3px;
+    width: 34px; height: 34px; font-size: 20px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s; flex-shrink: 0; font-weight: 900;
+  }
+  .add-btn:hover { background: var(--brand-dark); }
+
+  /* CART */
+  .cart-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; }
+  .cart-overlay.open { display: block; }
+  .cart-panel {
+    position: fixed; right: 0; top: 0; bottom: 0; width: 360px; max-width: 95vw;
+    background: #0e0e0e; border-left: 1px solid var(--border);
+    z-index: 201; display: flex; flex-direction: column;
+    transform: translateX(100%); transition: transform 0.3s ease;
+  }
+  .cart-panel.open { transform: translateX(0); }
+  .cart-header {
+    padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .cart-header h3 { font-size: 14px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #fff; }
+  .close-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-sec); }
+  .cart-items { flex: 1; overflow-y: auto; padding: 1rem 1.5rem; display: flex; flex-direction: column; gap: 10px; }
+  .cart-item {
+    display: flex; gap: 12px; align-items: center;
+    padding: 12px; background: var(--surface); border-radius: 4px; border: 1px solid var(--border);
+  }
+  .cart-item-emoji { font-size: 30px; }
+  .cart-item-info { flex: 1; }
+  .cart-item-name { font-size: 12px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px; color: #fff; }
+  .cart-item-price { font-size: 14px; font-weight: 900; color: var(--brand); }
+  .qty-controls { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+  .qty-btn {
+    width: 24px; height: 24px; border-radius: 3px; border: 1px solid var(--border);
+    background: var(--surface2); cursor: pointer; font-size: 15px;
+    display: flex; align-items: center; justify-content: center; color: #fff; transition: border-color 0.15s;
+  }
+  .qty-btn:hover { border-color: var(--brand); }
+  .qty-num { font-size: 13px; font-weight: 800; min-width: 16px; text-align: center; color: #fff; }
+  .cart-remove { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 15px; }
+  .cart-empty { text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: 13px; letter-spacing: 1px; }
+  .cart-footer { padding: 1.25rem 1.5rem; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
+  .cart-total { display: flex; justify-content: space-between; font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+  .cart-total span:last-child { color: var(--brand); }
+  .checkout-btn {
+    background: var(--brand); color: #fff; border: none; border-radius: 4px;
+    padding: 14px; font-size: 12px; font-weight: 800; cursor: pointer; width: 100%;
+    letter-spacing: 2px; text-transform: uppercase; transition: background 0.2s;
+  }
+  .checkout-btn:hover { background: var(--brand-dark); }
+  .whatsapp-btn {
+    background: transparent; color: #25D366; border: 1px solid #25D366; border-radius: 4px;
+    padding: 12px; font-size: 12px; font-weight: 700; cursor: pointer; width: 100%;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    letter-spacing: 1.5px; text-transform: uppercase; transition: background 0.2s;
+  }
+  .whatsapp-btn:hover { background: rgba(37,211,102,0.1); }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--brand); color: #fff; padding: 10px 22px; border-radius: 4px;
+    font-size: 12px; font-weight: 700; z-index: 300; letter-spacing: 1px; text-transform: uppercase;
+    transition: transform 0.3s ease; pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  footer {
+    background: #050505; border-top: 1px solid var(--border);
+    color: var(--text-muted); text-align: center; padding: 2rem; font-size: 11px;
+    letter-spacing: 2px; text-transform: uppercase; margin-top: 1rem;
+  }
+  footer strong { color: var(--brand); }
+
+  @media (max-width: 600px) {
+    nav { padding: 0.75rem 1rem; }
+    .nav-links { display: none; }
+    .hero h1 { font-size: 36px; }
+    .section { padding: 2rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="promo">
+  ✦ FRETE GRÁTIS acima de R$199 &nbsp;·&nbsp; use o código <strong>TAKE10</strong> para 10% off ✦
+</div>
+
+<nav>
+  <div class="logo">TAKE<span>GIRLS</span></div>
+  <div class="nav-links">
+    <a onclick="scrollToSection('produtos')">Shop</a>
+    <a onclick="scrollToSection('categorias')">Drop</a>
+    <a href="#">Lookbook</a>
+    <a href="#">Contato</a>
+  </div>
+  <button class="cart-btn" onclick="openCart()">
+    <i class="ti ti-shopping-bag"></i>
+    Bag
+    <span class="cart-count" id="cartCount">0</span>
+  </button>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Drop 2026</div>
+  <h1>SEJA O<span class="accent">SEU PRÓPRIO ESTILO.</span></h1>
+  <p> Atitude, estilo e autenticidade em cada peça..</p>
+  <div class="hero-btns">
+    <button class="btn-primary" onclick="scrollToSection('produtos')">Shop agora</button>
+    <button class="btn-outline" onclick="openWhatsApp()">WhatsApp</button>
+  </div>
+</div>
+
+<div class="section" id="categorias">
+  <div class="section-header">
+    <span class="section-tag">Drop</span>
+    <span class="section-title">Categorias</span>
+    <div class="section-line"></div>
+  </div>
+  <div class="categories">
+    <div class="cat-card" onclick="filterBy('conjuntos')"><div class="cat-icon">🖤</div><div class="cat-name">Sets</div><div class="cat-count">9 peças</div></div>
+    <div class="cat-card" onclick="filterBy('tops')"><div class="cat-icon">⚡</div><div class="cat-name">Tops</div><div class="cat-count">21 peças</div></div>
+    <div class="cat-card" onclick="filterBy('calças')"><div class="cat-icon">💜</div><div class="cat-name">Bottoms</div><div class="cat-count">14 peças</div></div>
+    <div class="cat-card" onclick="filterBy('vestidos')"><div class="cat-icon">✦</div><div class="cat-name">Minis</div><div class="cat-count">11 peças</div></div>
+    <div class="cat-card" onclick="filterBy('acessorios')"><div class="cat-icon">💎</div><div class="cat-name">Acess.</div><div class="cat-count">18 peças</div></div>
+  </div>
+</div>
+
+<div class="section" id="produtos">
+  <div class="section-header">
+    <span class="section-tag">New</span>
+    <span class="section-title">Em destaque</span>
+    <div class="section-line"></div>
+  </div>
+  <div class="filters">
+    <button class="filter-btn active" onclick="setFilter(this,'todos')">All</button>
+    <button class="filter-btn" onclick="setFilter(this,'conjuntos')">Sets</button>
+    <button class="filter-btn" onclick="setFilter(this,'tops')">Tops</button>
+    <button class="filter-btn" onclick="setFilter(this,'calças')">Bottoms</button>
+    <button class="filter-btn" onclick="setFilter(this,'vestidos')">Minis</button>
+    <button class="filter-btn" onclick="setFilter(this,'acessorios')">Acess.</button>
+  </div>
+  <div class="products-grid" id="productsGrid"></div>
+</div>
+
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-panel" id="cartPanel">
+  <div class="cart-header">
+    <h3>Sua bag</h3>
+    <button class="close-btn" onclick="closeCart()">×</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-total"><span>Total</span><span id="cartTotal">R$ 0,00</span></div>
+    <button class="checkout-btn" onclick="checkout()">Finalizar pedido</button>
+    <button class="whatsapp-btn" onclick="openCartWhatsApp()">
+      <i class="ti ti-brand-whatsapp"></i> Pedir pelo WhatsApp
+    </button>
+  </div>
+</div>
+
+<footer>
+  <strong>TAKEGIRLS</strong> &nbsp;·&nbsp; @take_girlss &nbsp;·&nbsp; streetwear feminino
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// PRODUTOS — edite aqui para adicionar/remover/alterar peças
+// ============================================================
+const PRODUCTS = [
+  { id:1, name:'Body marsala',    sub:'Calça + Top · P M G GG', price:34.90, old:59.90, cat:'conjuntos',  emoji:'💜', bg:'#1a0a2e', badge:'sale', fav:false },
+  { id:2, name:'TOP CORSET PRETO',   sub:'Ajustável · PP P M G',   price:129, old:null, cat:'tops',       emoji:'🖤', bg:'#111',    badge:'new',  fav:false },
+  { id:3, name:'MINI SAIA COURO',    sub:'PU · 36 38 40 42',       price:159, old:199, cat:'vestidos',   emoji:'⚡', bg:'#1a0a1a', badge:'sale', fav:false },
+  { id:4, name:'WIDE LEG ROXO',      sub:'Streetwear · 36 ao 44',  price:209, old:null, cat:'calças',    emoji:'🔮', bg:'#0d0019', badge:'new',  fav:false },
+  { id:5, name:'SET MESH BADDIE',    sub:'Top + Saia · P M G',     price:239, old:289, cat:'conjuntos',  emoji:'💎', bg:'#0a0a1a', badge:'sale', fav:false },
+  { id:6, name:'TOP BANDANA PRETO',  sub:'One size · preto',       price:79,  old:null, cat:'tops',       emoji:'🖤', bg:'#111',    badge:'new',  fav:false },
+  { id:7, name:'MINI DRESS CUT-OUT', sub:'Preto · P M G',          price:219, old:269, cat:'vestidos',   emoji:'✦', bg:'#100010', badge:'sale', fav:false },
+  { id:8, name:'CINTO CORRENTE',     sub:'Prata e ouro · único',   price:89,  old:null, cat:'acessorios', emoji:'💫', bg:'#111',   badge:'new',  fav:false },
+];
+
+// ============================================================
+// CONFIGURAÇÃO — coloque seu número de WhatsApp aqui
+// Formato: código do país + DDD + número (sem espaços ou símbolos)
+// Exemplo Brasil: 5544999990000
+// ============================================================
+const WHATSAPP = '554298058724';
+
+let cart = [];
+let currentFilter = 'todos';
+
+function renderProducts() {
+  const grid = document.getElementById('productsGrid');
+  const filtered = currentFilter === 'todos' ? PRODUCTS : PRODUCTS.filter(p => p.cat === currentFilter);
+  grid.innerHTML = filtered.map(p => `
+    <div class="product-card">
+      <div class="product-img" style="background:${p.bg}">
+        <span>${p.emoji}</span>
+        ${p.badge === 'new'  ? '<span class="badge-new">New</span>'  : ''}
+        ${p.badge === 'sale' ? '<span class="badge-sale">Sale</span>' : ''}
+        <span class="badge-fav" onclick="toggleFav(${p.id}, this)">${p.fav ? '❤️' : '🤍'}</span>
+      </div>
+      <div class="product-info">
+        <div class="product-name">${p.name}</div>
+        <div class="product-sub">${p.sub}</div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price">R$ ${p.price.toFixed(2).replace('.',',')}</div>
+            ${p.old ? `<div class="product-old">R$ ${p.old.toFixed(2).replace('.',',')}</div>` : ''}
+          </div>
+          <button class="add-btn" onclick="addToCart(${p.id})">+</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addToCart(id) {
+  const p = PRODUCTS.find(x => x.id === id);
+  const ex = cart.find(x => x.id === id);
+  if (ex) ex.qty++; else cart.push({...p, qty:1});
+  updateCartCount();
+  showToast('✓ adicionado na bag');
+  openCart();
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(x => x.id !== id);
+  renderCart(); updateCartCount();
+}
+
+function changeQty(id, delta) {
+  const item = cart.find(x => x.id === id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) { removeFromCart(id); return; }
+  renderCart();
+}
+
+function renderCart() {
+  const el = document.getElementById('cartItems');
+  const footer = document.getElementById('cartFooter');
+  if (!cart.length) {
+    el.innerHTML = '<div class="cart-empty"><div style="font-size:36px;margin-bottom:12px">🖤</div>Sua bag tá vazia.<br>Vai no shop!</div>';
+    footer.style.display = 'none'; return;
+  }
+  footer.style.display = 'flex';
+  el.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <span class="cart-item-emoji">${item.emoji}</span>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-price">R$ ${(item.price * item.qty).toFixed(2).replace('.',',')}</div>
+        <div class="qty-controls">
+          <button class="qty-btn" onclick="changeQty(${item.id},-1)">−</button>
+          <span class="qty-num">${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${item.id},1)">+</button>
+        </div>
+      </div>
+      <button class="cart-remove" onclick="removeFromCart(${item.id})">✕</button>
+    </div>
+  `).join('');
+  const total = cart.reduce((s,i) => s + i.price * i.qty, 0);
+  document.getElementById('cartTotal').textContent = 'R$ ' + total.toFixed(2).replace('.',',');
+}
+
+function updateCartCount() {
+  document.getElementById('cartCount').textContent = cart.reduce((s,i) => s + i.qty, 0);
+  renderCart();
+}
+
+function openCart()  { document.getElementById('cartOverlay').classList.add('open'); document.getElementById('cartPanel').classList.add('open'); }
+function closeCart() { document.getElementById('cartOverlay').classList.remove('open'); document.getElementById('cartPanel').classList.remove('open'); }
+
+function setFilter(btn, cat) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = cat;
+  renderProducts();
+}
+
+function filterBy(cat) {
+  currentFilter = cat;
+  renderProducts();
+  scrollToSection('produtos');
+}
+
+function scrollToSection(id) { document.getElementById(id)?.scrollIntoView({ behavior:'smooth' }); }
+
+function toggleFav(id, el) {
+  const p = PRODUCTS.find(x => x.id === id);
+  p.fav = !p.fav;
+  el.textContent = p.fav ? '❤️' : '🤍';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function checkout() {
+  showToast('Redirecionando...');
+  setTimeout(() => openCartWhatsApp(), 800);
+}
+
+function openWhatsApp() {
+  const msg = encodeURIComponent('Oi! Vi o site da Take Girls e quero saber mais 🖤💜');
+  window.open('https://wa.me/' + WHATSAPP + '?text=' + msg, '_blank');
+}
+
+function openCartWhatsApp() {
+  if (!cart.length) { showToast('Adiciona algo na bag primeiro!'); return; }
+  const items = cart.map(i => `• ${i.name} (x${i.qty}) - R$ ${(i.price*i.qty).toFixed(2).replace('.',',')}`).join('\n');
+  const total = cart.reduce((s,i) => s + i.price*i.qty, 0);
+  const msg = encodeURIComponent(`Oi! Quero fazer um pedido 🖤\n\n${items}\n\nTotal: R$ ${total.toFixed(2).replace('.',',')}`);
+  window.open('https://wa.me/' + WHATSAPP + '?text=' + msg, '_blank');
+}
+
+renderProducts();
+renderCart();
+</script>
+</body>
+</html>
