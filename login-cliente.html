@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Take Girls — Entrar</title>
+<style>
+  :root {
+    --purple: #9B30FF;
+    --purple-light: #b660ff;
+    --purple-dim: rgba(155,48,255,0.12);
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #2a2a2a;
+    --text: #f0f0f0;
+    --muted: #777;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Segoe UI', sans-serif;
+    min-height: 100vh; display: flex;
+    align-items: center; justify-content: center; padding: 1.5rem;
+  }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 2.5rem 2rem;
+    width: 100%; max-width: 400px;
+  }
+
+  .logo {
+    text-align: center; margin-bottom: 2rem;
+  }
+  .logo h1 {
+    font-size: 2rem; font-weight: 900; letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+  .logo h1 span { color: var(--purple); }
+  .logo p { color: var(--muted); font-size: .85rem; margin-top: .4rem; }
+
+  .form-group { margin-bottom: 1.2rem; }
+  .form-group label {
+    display: block; font-size: .75rem; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--muted); margin-bottom: .5rem;
+  }
+  .input-wrap { position: relative; }
+  .input-wrap .icon {
+    position: absolute; left: .9rem; top: 50%; transform: translateY(-50%);
+    font-size: 1.1rem; pointer-events: none;
+  }
+  .input-wrap input {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); padding: .75rem .9rem .75rem 2.6rem;
+    border-radius: 10px; font-size: .95rem; outline: none;
+    transition: border-color .2s;
+  }
+  .input-wrap input:focus { border-color: var(--purple); }
+  .input-wrap input::placeholder { color: var(--muted); }
+
+  /* Campo de telefone com prefixo */
+  .phone-wrap { display: flex; gap: .5rem; }
+  .phone-prefix {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--muted); padding: .75rem .9rem; border-radius: 10px;
+    font-size: .95rem; white-space: nowrap; display: flex; align-items: center; gap: .4rem;
+  }
+  .phone-wrap input {
+    flex: 1; background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); padding: .75rem .9rem;
+    border-radius: 10px; font-size: .95rem; outline: none;
+    transition: border-color .2s;
+  }
+  .phone-wrap input:focus { border-color: var(--purple); }
+  .phone-wrap input::placeholder { color: var(--muted); }
+
+  .btn-main {
+    width: 100%; padding: .85rem; background: var(--purple);
+    color: #fff; border: none; border-radius: 10px;
+    font-size: 1rem; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; cursor: pointer; transition: .2s;
+    margin-top: .5rem;
+  }
+  .btn-main:hover { background: var(--purple-light); }
+  .btn-main:disabled { opacity: .5; cursor: not-allowed; }
+
+  .divider {
+    display: flex; align-items: center; gap: .75rem;
+    margin: 1.5rem 0; color: var(--muted); font-size: .8rem;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  .admin-link {
+    text-align: center; font-size: .82rem; color: var(--muted);
+  }
+  .admin-link a {
+    color: var(--purple); text-decoration: none; font-weight: 600;
+  }
+  .admin-link a:hover { color: var(--purple-light); }
+
+  .erro {
+    color: #ff6b6b; font-size: .82rem; margin-top: .5rem;
+    display: none; padding: .5rem .8rem; background: rgba(255,107,107,.08);
+    border-radius: 8px; border: 1px solid rgba(255,107,107,.2);
+  }
+
+  /* Tela logada */
+  #telaLogada { display: none; text-align: center; }
+  #telaLogada .avatar {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--purple-dim); border: 2px solid var(--purple);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem; margin: 0 auto 1rem;
+  }
+  #telaLogada h2 { font-size: 1.2rem; margin-bottom: .3rem; }
+  #telaLogada p { color: var(--muted); font-size: .85rem; margin-bottom: 1.5rem; }
+  .btn-ghost {
+    padding: .6rem 1.4rem; border: 1px solid var(--border);
+    background: none; color: var(--muted); border-radius: 8px;
+    cursor: pointer; font-size: .85rem; transition: .2s;
+  }
+  .btn-ghost:hover { border-color: var(--purple); color: var(--purple); }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <!-- FORMULÁRIO -->
+  <div id="telaForm">
+    <div class="logo">
+      <h1>TAKE <span>GIRLS</span></h1>
+      <p>Identifique-se para continuar comprando 🛍️</p>
+    </div>
+
+    <div class="form-group">
+      <label>Seu nome</label>
+      <div class="input-wrap">
+        <span class="icon">👤</span>
+        <input type="text" id="nome" placeholder="Como você se chama?" autocomplete="given-name">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>WhatsApp</label>
+      <div class="phone-wrap">
+        <div class="phone-prefix">🇧🇷 +55</div>
+        <input type="tel" id="telefone" placeholder="(11) 99999-9999"
+               maxlength="15" oninput="mascaraTelefone(this)">
+      </div>
+      <div class="erro" id="erroTelefone">Número inválido. Digite DDD + número.</div>
+    </div>
+
+    <button class="btn-main" id="btnEntrar" onclick="entrar()">CONTINUAR</button>
+
+    <div class="divider">ou</div>
+    <div class="admin-link">
+      É da equipe Take Girls? <a href="login-admin.html">Entrar como admin →</a>
+    </div>
+  </div>
+
+  <!-- LOGADA -->
+  <div id="telaLogada">
+    <div class="avatar" id="avatarLetra"></div>
+    <h2 id="nomeLogado"></h2>
+    <p id="telLogado"></p>
+    <p style="color: #9B30FF; font-size: .9rem; margin-bottom: 1.5rem;">✅ Identificada! Você pode continuar comprando.</p>
+    <a href="index.html" style="display:block; text-decoration:none;">
+      <button class="btn-main" style="margin-bottom: .75rem;">VER A LOJA →</button>
+    </a>
+    <button class="btn-ghost" onclick="sair()">Não sou eu — trocar conta</button>
+  </div>
+
+</div>
+
+<script>
+const STORAGE_KEY = 'tg_cliente';
+
+function mascaraTelefone(input) {
+  let v = input.value.replace(/\D/g, '');
+  if (v.length > 11) v = v.slice(0, 11);
+  if (v.length > 6)      v = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+  else if (v.length > 2) v = `(${v.slice(0,2)}) ${v.slice(2)}`;
+  input.value = v;
+}
+
+function telefoneValido(tel) {
+  return tel.replace(/\D/g, '').length >= 10;
+}
+
+function entrar() {
+  const nome = document.getElementById('nome').value.trim();
+  const tel  = document.getElementById('telefone').value.trim();
+  const erro = document.getElementById('erroTelefone');
+
+  if (!nome) {
+    document.getElementById('nome').focus(); return;
+  }
+  if (!telefoneValido(tel)) {
+    erro.style.display = 'block'; return;
+  }
+  erro.style.display = 'none';
+
+  const cliente = { nome, telefone: tel, desde: new Date().toISOString() };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(cliente));
+  mostrarLogada(cliente);
+}
+
+function mostrarLogada(cliente) {
+  document.getElementById('telaForm').style.display = 'none';
+  document.getElementById('telaLogada').style.display = 'block';
+  document.getElementById('avatarLetra').textContent = cliente.nome[0].toUpperCase();
+  document.getElementById('nomeLogado').textContent = 'Olá, ' + cliente.nome.split(' ')[0] + '! 💜';
+  document.getElementById('telLogado').textContent = '📱 +55 ' + cliente.telefone;
+}
+
+function sair() {
+  localStorage.removeItem(STORAGE_KEY);
+  document.getElementById('telaForm').style.display = 'block';
+  document.getElementById('telaLogada').style.display = 'none';
+  document.getElementById('nome').value = '';
+  document.getElementById('telefone').value = '';
+}
+
+// Auto-login se já identificada
+const salvo = localStorage.getItem(STORAGE_KEY);
+if (salvo) mostrarLogada(JSON.parse(salvo));
+</script>
+</body>
+</html>
