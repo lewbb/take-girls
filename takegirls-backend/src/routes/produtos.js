@@ -47,9 +47,12 @@ router.get('/', async (req, res) => {
     const { rows } = await pool.query(query, params);
     res.json(rows);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ erro: 'Erro ao buscar produtos.' });
-  }
+  console.error("ERRO PRODUTOS:", err);
+  res.status(500).json({
+    erro: "Erro ao buscar produtos.",
+    detalhe: err.message
+  });
+}
 });
 
 // ── GET /api/produtos/admin — lista completa (admin) ─────────
