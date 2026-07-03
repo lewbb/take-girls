@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Take Girls — Admin</title>
+<style>
+  :root {
+    --purple: #9B30FF;
+    --purple-light: #b660ff;
+    --purple-dim: rgba(155,48,255,0.15);
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #2a2a2a;
+    --text: #f0f0f0;
+    --muted: #888;
+    --red: #ff4444;
+    --green: #00cc66;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Segoe UI',sans-serif; min-height:100vh; }
+
+  /* ── Login ── */
+  #loginScreen {
+    display:flex; align-items:center; justify-content:center;
+    min-height:100vh; padding:1rem;
+  }
+  .login-box {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:16px; padding:2.5rem; width:100%; max-width:380px;
+  }
+  .login-box h1 { font-size:1.6rem; text-align:center; margin-bottom:.3rem; }
+  .login-box h1 span { color:var(--purple); }
+  .login-box p { color:var(--muted); text-align:center; font-size:.85rem; margin-bottom:2rem; }
+
+  /* ── Admin Layout ── */
+  #adminScreen { display:none; }
+  .topbar {
+    background:var(--surface); border-bottom:1px solid var(--border);
+    padding:.9rem 1.5rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100;
+  }
+  .topbar-logo { font-size:1.2rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; }
+  .topbar-logo span { color:var(--purple); }
+  .topbar-right { display:flex; gap:.75rem; align-items:center; }
+  .main { padding:1.5rem; max-width:1100px; margin:0 auto; }
+
+  /* ── Stats ── */
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:1rem; margin-bottom:2rem; }
+  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.2rem; }
+  .stat-card .num { font-size:2rem; font-weight:800; color:var(--purple); }
+  .stat-card .label { font-size:.78rem; color:var(--muted); margin-top:.2rem; text-transform:uppercase; letter-spacing:1px; }
+
+  /* ── Tabs ── */
+  .tabs { display:flex; gap:.5rem; margin-bottom:1.5rem; border-bottom:1px solid var(--border); padding-bottom:0; }
+  .tab { padding:.7rem 1.3rem; background:none; border:none; color:var(--muted); cursor:pointer; font-size:.9rem; font-weight:600; border-bottom:2px solid transparent; transition:.2s; }
+  .tab.active { color:var(--purple); border-bottom-color:var(--purple); }
+
+  /* ── Toolbar ── */
+  .toolbar { display:flex; gap:.75rem; margin-bottom:1.2rem; flex-wrap:wrap; align-items:center; }
+  .toolbar input, .toolbar select {
+    background:var(--surface2); border:1px solid var(--border); color:var(--text);
+    padding:.55rem .9rem; border-radius:8px; font-size:.88rem; outline:none;
+  }
+  .toolbar input:focus, .toolbar select:focus { border-color:var(--purple); }
+  .toolbar input { flex:1; min-width:180px; }
+
+  /* ── Tabela ── */
+  .table-wrap { overflow-x:auto; border-radius:12px; border:1px solid var(--border); }
+  table { width:100%; border-collapse:collapse; }
+  th { background:var(--surface2); padding:.8rem 1rem; text-align:left; font-size:.75rem; text-transform:uppercase; letter-spacing:1px; color:var(--muted); white-space:nowrap; }
+  td { padding:.8rem 1rem; border-top:1px solid var(--border); vertical-align:middle; font-size:.88rem; }
+  tr:hover td { background:var(--surface2); }
+
+  /* ── Imagem thumbnail ── */
+  .thumb-cell { display:flex; align-items:center; gap:.6rem; }
+  .thumb {
+    width:48px; height:48px; border-radius:8px; object-fit:cover;
+    border:1px solid var(--border); background:var(--surface2);
+    display:flex; align-items:center; justify-content:center; font-size:1.4rem;
+    flex-shrink:0; cursor:pointer; position:relative; overflow:hidden;
+  }
+  .thumb img { width:100%; height:100%; object-fit:cover; }
+  .thumb .upload-overlay {
+    position:absolute; inset:0; background:rgba(155,48,255,.8);
+    display:none; align-items:center; justify-content:center; font-size:.7rem;
+    color:#fff; text-align:center; line-height:1.2;
+  }
+  .thumb:hover .upload-overlay { display:flex; }
+  .thumb input[type=file] { display:none; }
+
+  .badge { display:inline-block; padding:.2rem .55rem; border-radius:20px; font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
+  .badge-new { background:var(--purple-dim); color:var(--purple); }
+  .badge-sale { background:rgba(255,68,68,.15); color:var(--red); }
+  .badge-ativo { background:rgba(0,204,102,.12); color:var(--green); }
+  .badge-inativo { background:rgba(255,255,255,.06); color:var(--muted); }
+
+  .promo-price { color:var(--purple); font-weight:700; }
+  .old-price { text-decoration:line-through; color:var(--muted); font-size:.8rem; }
+
+  /* ── Botões ── */
+  .btn {
+    padding:.5rem 1rem; border-radius:8px; border:none; cursor:pointer;
+    font-size:.82rem; font-weight:700; transition:.2s; display:inline-flex; align-items:center; gap:.4rem;
+  }
+  .btn-primary { background:var(--purple); color:#fff; }
+  .btn-primary:hover { background:var(--purple-light); }
+  .btn-ghost { background:transparent; color:var(--muted); border:1px solid var(--border); }
+  .btn-ghost:hover { border-color:var(--purple); color:var(--purple); }
+  .btn-danger { background:rgba(255,68,68,.1); color:var(--red); border:1px solid rgba(255,68,68,.2); }
+  .btn-danger:hover { background:rgba(255,68,68,.2); }
+  .btn-sm { padding:.35rem .7rem; font-size:.78rem; }
+  .btn:disabled { opacity:.4; cursor:not-allowed; }
+
+  /* ── Forms ── */
+  .form-group { margin-bottom:1rem; }
+  .form-group label { display:block; font-size:.78rem; color:var(--muted); margin-bottom:.4rem; text-transform:uppercase; letter-spacing:.5px; }
+  .form-group input, .form-group select, .form-group textarea {
+    width:100%; background:var(--surface2); border:1px solid var(--border);
+    color:var(--text); padding:.65rem .9rem; border-radius:8px; font-size:.9rem; outline:none;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:var(--purple); }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+
+  /* ── Modal ── */
+  .modal-overlay {
+    display:none; position:fixed; inset:0; background:rgba(0,0,0,.8);
+    z-index:1000; align-items:center; justify-content:center; padding:1rem;
+  }
+  .modal-overlay.open { display:flex; }
+  .modal {
+    background:var(--surface); border:1px solid var(--border); border-radius:16px;
+    padding:2rem; width:100%; max-width:520px; max-height:90vh; overflow-y:auto;
+  }
+  .modal h2 { font-size:1.1rem; margin-bottom:1.5rem; }
+  .modal-footer { display:flex; gap:.75rem; justify-content:flex-end; margin-top:1.5rem; }
+
+  /* ── Upload modal ── */
+  .upload-zone {
+    border:2px dashed var(--border); border-radius:12px; padding:2.5rem 1rem;
+    text-align:center; cursor:pointer; transition:.2s;
+  }
+  .upload-zone:hover, .upload-zone.drag { border-color:var(--purple); background:var(--purple-dim); }
+  .upload-zone .icon { font-size:2.5rem; margin-bottom:.75rem; }
+  .upload-zone p { color:var(--muted); font-size:.88rem; }
+  .upload-zone strong { color:var(--purple); }
+  .img-preview {
+    width:100%; max-height:240px; object-fit:contain; border-radius:10px;
+    border:1px solid var(--border); margin-top:1rem; display:none;
+  }
+  .upload-progress { height:4px; background:var(--border); border-radius:4px; margin-top:1rem; overflow:hidden; display:none; }
+  .upload-progress-bar { height:100%; background:var(--purple); width:0%; transition:width .3s; }
+
+  /* ── Toast ── */
+  #toast {
+    position:fixed; bottom:1.5rem; right:1.5rem; background:var(--surface);
+    border:1px solid var(--border); border-radius:10px; padding:.8rem 1.2rem;
+    font-size:.88rem; display:none; z-index:9999; align-items:center; gap:.6rem;
+    box-shadow:0 8px 32px rgba(0,0,0,.4);
+  }
+  #toast.show { display:flex; }
+  #toast.success { border-color:var(--green); color:var(--green); }
+  #toast.error   { border-color:var(--red); color:var(--red); }
+
+  /* ── Sem imagem placeholder ── */
+  .no-img { font-size:1.5rem; color:var(--muted); line-height:48px; text-align:center; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════ LOGIN ══════════════════════════ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <h1>TAKE <span>GIRLS</span></h1>
+    <p>Painel Administrativo</p>
+
+    <div class="form-group">
+      <label>Usuário</label>
+      <input type="text" id="loginUser" placeholder="takegirls" />
+    </div>
+    <div class="form-group">
+      <label>Senha</label>
+      <input type="password" id="loginPass" placeholder="••••••••" />
+    </div>
+    <button class="btn btn-primary" style="width:100%;padding:.75rem" onclick="login()">ENTRAR</button>
+    <p id="loginErr" style="color:var(--red);font-size:.82rem;margin-top:.75rem;text-align:center"></p>
+  </div>
+</div>
+
+<!-- ══════════════════════════ ADMIN ══════════════════════════ -->
+<div id="adminScreen">
+  <div class="topbar">
+    <div class="topbar-logo">TAKE <span>GIRLS</span></div>
+    <div class="topbar-right">
+      <span style="color:var(--muted);font-size:.82rem">Admin</span>
+      <button class="btn btn-ghost btn-sm" onclick="logout()">Sair</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat-card"><div class="num" id="statAtivos">—</div><div class="label">Peças Ativas</div></div>
+      <div class="stat-card"><div class="num" id="statPromo">—</div><div class="label">Em Promoção</div></div>
+      <div class="stat-card"><div class="num" id="statSemImg">—</div><div class="label">Sem Foto</div></div>
+      <div class="stat-card"><div class="num" id="statEstoque">—</div><div class="label">Estoque Total</div></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('produtos')">Produtos</button>
+      <button class="tab" onclick="switchTab('pedidos')">Pedidos</button>
+    </div>
+
+    <!-- ── TAB PRODUTOS ── -->
+    <div id="tabProdutos">
+      <div class="toolbar">
+        <input type="text" id="busca" placeholder="🔍 Buscar produto..." oninput="renderProdutos()">
+        <select id="filtroCat" onchange="renderProdutos()">
+          <option value="">Todas categorias</option>
+          <option value="Sets">Sets</option>
+          <option value="Tops">Tops</option>
+          <option value="Bottoms">Bottoms</option>
+          <option value="Minis">Minis</option>
+          <option value="Acessórios">Acessórios</option>
+        </select>
+        <select id="filtroStatus" onchange="renderProdutos()">
+          <option value="">Todos status</option>
+          <option value="ativo">Ativos</option>
+          <option value="inativo">Inativos</option>
+        </select>
+        <button class="btn btn-primary" onclick="abrirModalProduto()">+ Adicionar</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Foto</th>
+              <th>Produto</th>
+              <th>Categoria</th>
+              <th>Preço</th>
+              <th>Estoque</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaProdutos"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── TAB PEDIDOS ── -->
+    <div id="tabPedidos" style="display:none">
+      <p style="color:var(--muted)">Lista de pedidos aparecerá aqui após integração com o backend.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MODAL PRODUTO ══════════════ -->
+<div class="modal-overlay" id="modalProduto">
+  <div class="modal">
+    <h2 id="modalTitle">Novo Produto</h2>
+    <input type="hidden" id="prodId">
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Nome</label>
+        <input type="text" id="prodNome" placeholder="Ex: Set Cropped Neon">
+      </div>
+      <div class="form-group">
+        <label>Emoji</label>
+        <input type="text" id="prodEmoji" placeholder="🔥" maxlength="4">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Categoria</label>
+        <select id="prodCat">
+          <option>Sets</option><option>Tops</option><option>Bottoms</option><option>Minis</option><option>Acessórios</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="prodStatus">
+          <option value="ativo">Ativo</option>
+          <option value="inativo">Inativo</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Preço (R$)</label>
+        <input type="number" id="prodPreco" placeholder="99.90" step="0.01">
+      </div>
+      <div class="form-group">
+        <label>Preço Promo (R$)</label>
+        <input type="number" id="prodPrecoPromo" placeholder="Deixe vazio se não houver" step="0.01">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Estoque</label>
+        <input type="number" id="prodEstoque" placeholder="10">
+      </div>
+      <div class="form-group">
+        <label>Badge</label>
+        <select id="prodBadge">
+          <option value="">Nenhum</option>
+          <option value="new">NEW</option>
+          <option value="sale">SALE</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Tamanhos disponíveis</label>
+      <input type="text" id="prodTamanhos" placeholder="PP, P, M, G, GG">
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fecharModal('modalProduto')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarProduto()">Salvar Produto</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MODAL UPLOAD ══════════════ -->
+<div class="modal-overlay" id="modalUpload">
+  <div class="modal" style="max-width:420px">
+    <h2>📸 Foto do Produto</h2>
+    <p id="uploadProdNome" style="color:var(--muted);font-size:.85rem;margin-bottom:1.2rem"></p>
+
+    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()"
+         ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+      <div class="icon">🖼️</div>
+      <p>Clique ou arraste a imagem aqui</p>
+      <p><strong>JPG, PNG, WEBP</strong> · Máx. 5MB</p>
+      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" onchange="previewImg(event)">
+    </div>
+
+    <img class="img-preview" id="imgPreview" alt="Preview">
+
+    <div class="upload-progress" id="uploadProgress">
+      <div class="upload-progress-bar" id="uploadProgressBar"></div>
+    </div>
+
+    <div style="display:flex;gap:.5rem;margin-top:1rem" id="uploadActions">
+      <button class="btn btn-danger btn-sm" id="btnRemoverImg" onclick="removerImagem()" style="display:none">🗑 Remover foto atual</button>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fecharModal('modalUpload')">Cancelar</button>
+      <button class="btn btn-primary" id="btnEnviarImg" onclick="enviarImagem()" disabled>Enviar Foto</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ──────────────────────────────────────────────────────────────
+// CONFIG
+// ──────────────────────────────────────────────────────────────
+const API = 'http://localhost:3000';
+const TG_KEY = 'tg_produtos'; // mesma chave lida pelo index.html
+let token = localStorage.getItem('tg_token');
+let produtos = [];
+let uploadProdutoId = null;
+let arquivoSelecionado = null;
+
+function catParaLoja(cat) {
+  const mapa = { 'Sets':'conjuntos','Tops':'tops','Bottoms':'calcas','Minis':'vestidos','Acessórios':'acessorios' };
+  return mapa[cat] || cat.toLowerCase();
+}
+function adminParaLoja(p) {
+  return { id:p.id, name:p.nome, sub:p.tamanhos||'', price:p.preco, old:p.preco_promo||null,
+    cat:catParaLoja(p.categoria), emoji:p.emoji||'\u{1F5A4}', bg:p.bg||'#111',
+    badge:p.badge||'', fav:false, status:p.status, imagem_url:p.imagem_url||null };
+}
+function salvarNoLocalStorage() {
+  localStorage.setItem(TG_KEY, JSON.stringify(produtos.map(adminParaLoja)));
+}
+
+// ──────────────────────────────────────────────────────────────
+// AUTH
+// ──────────────────────────────────────────────────────────────
+async function login() {
+  const usuario = document.getElementById('loginUser').value;
+  const senha   = document.getElementById('loginPass').value;
+  const err     = document.getElementById('loginErr');
+  err.textContent = '';
+
+  // Modo DEMO local (sem backend)
+  if (usuario === 'takegirls' && senha === 'admin123') {
+    token = 'demo-token';
+    localStorage.setItem('tg_token', token);
+    mostrarAdmin();
+    carregarDemoData();
+    return;
+  }
+
+  try {
+    const r = await fetch(`${API}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usuario, senha })
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.erro || 'Credenciais inválidas');
+    token = d.token;
+    localStorage.setItem('tg_token', token);
+    mostrarAdmin();
+    await carregarProdutos();
+  } catch(e) {
+    err.textContent = e.message;
+  }
+}
+
+function logout() {
+  localStorage.removeItem('tg_token');
+  token = null;
+  document.getElementById('adminScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+
+function mostrarAdmin() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminScreen').style.display = 'block';
+}
+
+// ──────────────────────────────────────────────────────────────
+// DEMO DATA (quando não há backend)
+// ──────────────────────────────────────────────────────────────
+function carregarDemoData() {
+  produtos = [
+    { id:1, nome:'Set Cropped Neon', emoji:'🔥', categoria:'Sets', preco:159.90, preco_promo:null, estoque:8, status:'ativo', badge:'new', tamanhos:'PP,P,M,G', imagem_url:null },
+    { id:2, nome:'Top Veludo Dark', emoji:'💜', categoria:'Tops', preco:89.90, preco_promo:69.90, estoque:15, status:'ativo', badge:'sale', tamanhos:'P,M,G', imagem_url:null },
+    { id:3, nome:'Saia Mini Plissada', emoji:'✨', categoria:'Minis', preco:119.90, preco_promo:null, estoque:0, status:'inativo', badge:'', tamanhos:'P,M,G,GG', imagem_url:null },
+    { id:4, nome:'Short Cargo Baddie', emoji:'🖤', categoria:'Bottoms', preco:109.90, preco_promo:null, estoque:12, status:'ativo', badge:'new', tamanhos:'PP,P,M,G,GG', imagem_url:null },
+  ];
+  salvarNoLocalStorage();
+  atualizarStats();
+  renderProdutos();
+}
+
+// CARREGAR PRODUTOS (backend)
+// ──────────────────────────────────────────────────────────────
+async function carregarProdutos() {
+  try {
+    const r = await fetch(`${API}/api/produtos/admin`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const d = await r.json();
+    produtos = d;
+    atualizarStats();
+    renderProdutos();
+  } catch(e) {
+    toast('Erro ao carregar produtos', 'error');
+  }
+}
+
+// ──────────────────────────────────────────────────────────────
+// STATS
+// ──────────────────────────────────────────────────────────────
+function atualizarStats() {
+  const ativos   = produtos.filter(p => p.status === 'ativo').length;
+  const promo    = produtos.filter(p => p.preco_promo).length;
+  const semImg   = produtos.filter(p => !p.imagem_url).length;
+  const estoque  = produtos.reduce((a, p) => a + (p.estoque || 0), 0);
+  document.getElementById('statAtivos').textContent   = ativos;
+  document.getElementById('statPromo').textContent    = promo;
+  document.getElementById('statSemImg').textContent   = semImg;
+  document.getElementById('statEstoque').textContent  = estoque;
+}
+
+// ──────────────────────────────────────────────────────────────
+// RENDER TABELA
+// ──────────────────────────────────────────────────────────────
+function renderProdutos() {
+  const busca  = document.getElementById('busca').value.toLowerCase();
+  const cat    = document.getElementById('filtroCat').value;
+  const status = document.getElementById('filtroStatus').value;
+
+  const filtrados = produtos.filter(p => {
+    const matchBusca  = p.nome.toLowerCase().includes(busca);
+    const matchCat    = !cat    || p.categoria === cat;
+    const matchStatus = !status || p.status === status;
+    return matchBusca && matchCat && matchStatus;
+  });
+
+  const tbody = document.getElementById('tabelaProdutos');
+  tbody.innerHTML = filtrados.map(p => {
+    const imgHtml = p.imagem_url
+      ? `<img src="${API}${p.imagem_url}" alt="${p.nome}" style="width:100%;height:100%;object-fit:cover;border-radius:6px">`
+      : `<span class="no-img">${p.emoji || '👗'}</span>`;
+
+    const precoHtml = p.preco_promo
+      ? `<span class="old-price">R$ ${fmt(p.preco)}</span><br><span class="promo-price">R$ ${fmt(p.preco_promo)}</span>`
+      : `R$ ${fmt(p.preco)}`;
+
+    const badgeHtml = p.badge === 'new'  ? `<span class="badge badge-new">NEW</span>` :
+                      p.badge === 'sale' ? `<span class="badge badge-sale">SALE</span>` : '';
+
+    const statusHtml = p.status === 'ativo'
+      ? `<span class="badge badge-ativo">Ativo</span>`
+      : `<span class="badge badge-inativo">Inativo</span>`;
+
+    return `<tr>
+      <td>
+        <div class="thumb" onclick="abrirUpload(${p.id}, '${escapar(p.nome)}', ${!!p.imagem_url})">
+          ${imgHtml}
+          <div class="upload-overlay">📸<br>Trocar</div>
+        </div>
+      </td>
+      <td>
+        <div style="font-weight:600">${p.nome}</div>
+        <div style="font-size:.75rem;color:var(--muted)">${p.tamanhos || '—'} ${badgeHtml}</div>
+      </td>
+      <td style="color:var(--muted)">${p.categoria}</td>
+      <td>${precoHtml}</td>
+      <td style="color:${p.estoque === 0 ? 'var(--red)' : 'var(--text)'}">${p.estoque}</td>
+      <td>${statusHtml}</td>
+      <td>
+        <div style="display:flex;gap:.4rem">
+          <button class="btn btn-ghost btn-sm" onclick="editarProduto(${p.id})">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="excluirProduto(${p.id})">🗑</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ──────────────────────────────────────────────────────────────
+// CRUD PRODUTO
+// ──────────────────────────────────────────────────────────────
+function abrirModalProduto(p = null) {
+  document.getElementById('modalTitle').textContent = p ? 'Editar Produto' : 'Novo Produto';
+  document.getElementById('prodId').value         = p?.id || '';
+  document.getElementById('prodNome').value       = p?.nome || '';
+  document.getElementById('prodEmoji').value      = p?.emoji || '';
+  document.getElementById('prodCat').value        = p?.categoria || 'Sets';
+  document.getElementById('prodStatus').value     = p?.status || 'ativo';
+  document.getElementById('prodPreco').value      = p?.preco || '';
+  document.getElementById('prodPrecoPromo').value = p?.preco_promo || '';
+  document.getElementById('prodEstoque').value    = p?.estoque || '';
+  document.getElementById('prodBadge').value      = p?.badge || '';
+  document.getElementById('prodTamanhos').value   = p?.tamanhos || '';
+  document.getElementById('modalProduto').classList.add('open');
+}
+
+function editarProduto(id) {
+  const p = produtos.find(x => x.id === id);
+  if (p) abrirModalProduto(p);
+}
+
+async function salvarProduto() {
+  const id = document.getElementById('prodId').value;
+  const body = {
+    nome:        document.getElementById('prodNome').value,
+    emoji:       document.getElementById('prodEmoji').value,
+    categoria:   document.getElementById('prodCat').value,
+    status:      document.getElementById('prodStatus').value,
+    preco:       parseFloat(document.getElementById('prodPreco').value),
+    preco_promo: document.getElementById('prodPrecoPromo').value ? parseFloat(document.getElementById('prodPrecoPromo').value) : null,
+    estoque:     parseInt(document.getElementById('prodEstoque').value),
+    badge:       document.getElementById('prodBadge').value,
+    tamanhos:    document.getElementById('prodTamanhos').value,
+  };
+
+  // Modo demo: só atualiza o array local
+  if (token === 'demo-token') {
+    if (id) {
+      const idx = produtos.findIndex(p => p.id == id);
+      if (idx !== -1) produtos[idx] = { ...produtos[idx], ...body };
+    } else {
+      produtos.push({ id: Date.now(), imagem_url: null, ...body });
+    }
+    fecharModal('modalProduto');
+    salvarNoLocalStorage();
+    atualizarStats();
+    renderProdutos();
+    toast('Produto salvo!', 'success');
+    return;
+  }
+
+  try {
+    const url    = id ? `${API}/api/produtos/${id}` : `${API}/api/produtos`;
+    const method = id ? 'PUT' : 'POST';
+    const r = await fetch(url, {
+      method,
+      headers: { 'Content-Type':'application/json', Authorization:`Bearer ${token}` },
+      body: JSON.stringify(body)
+    });
+    if (!r.ok) throw new Error();
+    fecharModal('modalProduto');
+    await carregarProdutos();
+    toast(id ? 'Produto atualizado!' : 'Produto adicionado!', 'success');
+  } catch {
+    toast('Erro ao salvar produto', 'error');
+  }
+}
+
+async function excluirProduto(id) {
+  if (!confirm('Excluir este produto?')) return;
+
+  if (token === 'demo-token') {
+    produtos = produtos.filter(p => p.id !== id);
+    salvarNoLocalStorage();
+    atualizarStats();
+    renderProdutos();
+    toast('Produto excluído!', 'success');
+    return;
+  }
+
+  try {
+    await fetch(`${API}/api/produtos/${id}`, {
+      method:'DELETE', headers:{ Authorization:`Bearer ${token}` }
+    });
+    await carregarProdutos();
+    toast('Produto excluído!', 'success');
+  } catch {
+    toast('Erro ao excluir', 'error');
+  }
+}
+
+// ──────────────────────────────────────────────────────────────
+// UPLOAD DE IMAGEM
+// ──────────────────────────────────────────────────────────────
+function abrirUpload(id, nome, temImagem) {
+  uploadProdutoId = id;
+  arquivoSelecionado = null;
+
+  document.getElementById('uploadProdNome').textContent = nome;
+  document.getElementById('fileInput').value = '';
+  document.getElementById('imgPreview').style.display = 'none';
+  document.getElementById('btnEnviarImg').disabled = true;
+  document.getElementById('uploadProgress').style.display = 'none';
+  document.getElementById('uploadProgressBar').style.width = '0%';
+  document.getElementById('btnRemoverImg').style.display = temImagem ? 'inline-flex' : 'none';
+
+  document.getElementById('modalUpload').classList.add('open');
+}
+
+function previewImg(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  arquivoSelecionado = file;
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const preview = document.getElementById('imgPreview');
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+  document.getElementById('btnEnviarImg').disabled = false;
+}
+
+function dragOver(e) { e.preventDefault(); document.getElementById('uploadZone').classList.add('drag'); }
+function dragLeave(e) { document.getElementById('uploadZone').classList.remove('drag'); }
+function dropFile(e) {
+  e.preventDefault();
+  dragLeave(e);
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  document.getElementById('fileInput').files = dt.files;
+  previewImg({ target: { files: [file] } });
+}
+
+async function enviarImagem() {
+  if (!arquivoSelecionado || !uploadProdutoId) return;
+
+  const progress    = document.getElementById('uploadProgress');
+  const progressBar = document.getElementById('uploadProgressBar');
+  const btn         = document.getElementById('btnEnviarImg');
+  btn.disabled = true;
+  progress.style.display = 'block';
+
+  // Modo demo: só atualiza localmente com DataURL
+  if (token === 'demo-token') {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const idx = produtos.findIndex(p => p.id === uploadProdutoId);
+      if (idx !== -1) {
+        // Guarda como data URL para demo (sem servidor)
+        produtos[idx].imagem_url = null;
+        produtos[idx]._demoImg = e.target.result;
+      }
+      progressBar.style.width = '100%';
+      setTimeout(() => {
+        fecharModal('modalUpload');
+        atualizarStats();
+        renderProdutos();
+        toast('Foto salva! (modo demo — sem servidor)', 'success');
+      }, 400);
+    };
+    reader.readAsDataURL(arquivoSelecionado);
+
+    // Simula progresso
+    let p = 0;
+    const iv = setInterval(() => {
+      p += 20; progressBar.style.width = p + '%';
+      if (p >= 80) clearInterval(iv);
+    }, 100);
+    return;
+  }
+
+  try {
+    const formData = new FormData();
+    formData.append('imagem', arquivoSelecionado);
+
+    // Progresso simulado (fetch não expõe XHR progress)
+    let p = 0;
+    const iv = setInterval(() => {
+      p += 15; progressBar.style.width = Math.min(p, 85) + '%';
+    }, 200);
+
+    const r = await fetch(`${API}/api/produtos/${uploadProdutoId}/imagem`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData
+    });
+
+    clearInterval(iv);
+    progressBar.style.width = '100%';
+
+    if (!r.ok) throw new Error();
+    const d = await r.json();
+
+    // Atualiza localmente
+    const idx = produtos.findIndex(p => p.id === uploadProdutoId);
+    if (idx !== -1) produtos[idx].imagem_url = d.imagem_url;
+
+    setTimeout(() => {
+      fecharModal('modalUpload');
+      atualizarStats();
+      renderProdutos();
+      toast('Foto enviada com sucesso! 🎉', 'success');
+    }, 400);
+
+  } catch {
+    toast('Erro ao enviar imagem', 'error');
+    btn.disabled = false;
+  }
+}
+
+async function removerImagem() {
+  if (!confirm('Remover a foto deste produto?')) return;
+
+  if (token === 'demo-token') {
+    const idx = produtos.findIndex(p => p.id === uploadProdutoId);
+    if (idx !== -1) { produtos[idx].imagem_url = null; produtos[idx]._demoImg = null; }
+    fecharModal('modalUpload');
+    atualizarStats();
+    renderProdutos();
+    toast('Foto removida! (modo demo)', 'success');
+    return;
+  }
+
+  try {
+    await fetch(`${API}/api/produtos/${uploadProdutoId}/imagem`, {
+      method: 'DELETE', headers: { Authorization: `Bearer ${token}` }
+    });
+    const idx = produtos.findIndex(p => p.id === uploadProdutoId);
+    if (idx !== -1) produtos[idx].imagem_url = null;
+    fecharModal('modalUpload');
+    atualizarStats();
+    renderProdutos();
+    toast('Foto removida!', 'success');
+  } catch {
+    toast('Erro ao remover foto', 'error');
+  }
+}
+
+// ──────────────────────────────────────────────────────────────
+// UTILITÁRIOS
+// ──────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tabProdutos').style.display = tab === 'produtos' ? 'block' : 'none';
+  document.getElementById('tabPedidos').style.display  = tab === 'pedidos'  ? 'block' : 'none';
+}
+
+function fecharModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+function fmt(n) { return Number(n).toFixed(2).replace('.',','); }
+function escapar(s) { return s.replace(/'/g, "\\'"); }
+
+let toastTimer;
+function toast(msg, tipo = 'success') {
+  const el = document.getElementById('toast');
+  el.textContent = (tipo === 'success' ? '✅ ' : '❌ ') + msg;
+  el.className = `show ${tipo}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.className = '', 3000);
+}
+
+// Auto-login se já tem token
+if (token) {
+  mostrarAdmin();
+  // Carrega do localStorage se existir, senão usa demo data
+  const salvo = localStorage.getItem(TG_KEY);
+  if (salvo) {
+    try {
+      const lista = JSON.parse(salvo);
+      // Converte de volta pro formato admin
+      produtos = lista.map(p => ({
+        id: p.id, nome: p.name, emoji: p.emoji, categoria: lojaParaCat(p.cat),
+        preco: p.price, preco_promo: p.old || null, estoque: p.estoque || 0,
+        status: p.status || 'ativo', badge: p.badge || '', tamanhos: p.sub || '',
+        imagem_url: p.imagem_url || null, bg: p.bg || '#111'
+      }));
+      atualizarStats(); renderProdutos();
+    } catch(e) { carregarDemoData(); }
+  } else { carregarDemoData(); }
+}
+
+function lojaParaCat(cat) {
+  const mapa = { 'conjuntos':'Sets','tops':'Tops','calcas':'Bottoms','vestidos':'Minis','acessorios':'Acessórios' };
+  return mapa[cat] || 'Sets';
+}
+</script>
+</body>
+</html>

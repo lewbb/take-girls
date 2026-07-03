@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Take Girls — Admin</title>
+<style>
+  :root {
+    --purple: #9B30FF;
+    --purple-light: #b660ff;
+    --purple-dim: rgba(155,48,255,0.12);
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #2a2a2a;
+    --border-purple: rgba(155,48,255,0.4);
+    --text: #f0f0f0;
+    --muted: #777;
+    --red: #ff6b6b;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Segoe UI', sans-serif;
+    min-height: 100vh; display: flex;
+    align-items: center; justify-content: center; padding: 1.5rem;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border-purple);
+    border-radius: 20px; padding: 2.5rem 2rem;
+    width: 100%; max-width: 380px;
+    box-shadow: 0 0 40px rgba(155,48,255,0.08);
+  }
+
+  .logo { text-align: center; margin-bottom: 2rem; }
+  .logo .badge {
+    display: inline-flex; align-items: center; gap: .4rem;
+    background: var(--purple-dim); border: 1px solid var(--border-purple);
+    color: var(--purple); font-size: .72rem; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    padding: .35rem .8rem; border-radius: 20px; margin-bottom: 1rem;
+  }
+  .logo h1 {
+    font-size: 1.8rem; font-weight: 900; letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+  .logo h1 span { color: var(--purple); }
+  .logo p { color: var(--muted); font-size: .82rem; margin-top: .4rem; }
+
+  .form-group { margin-bottom: 1.2rem; }
+  .form-group label {
+    display: block; font-size: .72rem; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--muted); margin-bottom: .5rem;
+  }
+
+  /* Telefone */
+  .phone-wrap { display: flex; gap: .5rem; }
+  .phone-prefix {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--muted); padding: .75rem .9rem; border-radius: 10px;
+    font-size: .9rem; white-space: nowrap;
+  }
+  .phone-wrap input, .input-field {
+    flex: 1; width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); padding: .75rem .9rem;
+    border-radius: 10px; font-size: .95rem; outline: none; transition: border-color .2s;
+  }
+  .phone-wrap input:focus, .input-field:focus { border-color: var(--purple); }
+  .phone-wrap input::placeholder, .input-field::placeholder { color: var(--muted); }
+
+  /* Campo senha com olho */
+  .senha-wrap { position: relative; }
+  .senha-wrap input {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); padding: .75rem 2.8rem .75rem .9rem;
+    border-radius: 10px; font-size: .95rem; outline: none; transition: border-color .2s;
+  }
+  .senha-wrap input:focus { border-color: var(--purple); }
+  .senha-wrap input::placeholder { color: var(--muted); }
+  .toggle-senha {
+    position: absolute; right: .8rem; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: var(--muted); cursor: pointer;
+    font-size: 1rem; padding: .2rem; line-height: 1;
+  }
+  .toggle-senha:hover { color: var(--text); }
+
+  .btn-main {
+    width: 100%; padding: .85rem; background: var(--purple);
+    color: #fff; border: none; border-radius: 10px;
+    font-size: .95rem; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; cursor: pointer; transition: .2s; margin-top: .5rem;
+  }
+  .btn-main:hover { background: var(--purple-light); }
+  .btn-main:disabled { opacity: .5; cursor: not-allowed; }
+
+  .erro-box {
+    background: rgba(255,107,107,.08); border: 1px solid rgba(255,107,107,.25);
+    color: var(--red); font-size: .82rem; padding: .7rem .9rem;
+    border-radius: 8px; margin-top: .75rem; display: none;
+    text-align: center;
+  }
+
+  .voltar {
+    text-align: center; margin-top: 1.5rem; font-size: .82rem; color: var(--muted);
+  }
+  .voltar a { color: var(--purple); text-decoration: none; }
+  .voltar a:hover { color: var(--purple-light); }
+
+  /* Tentativas bloqueadas */
+  .bloqueio {
+    text-align: center; padding: .5rem;
+    display: none;
+  }
+  .bloqueio .icon { font-size: 2.5rem; margin-bottom: .75rem; }
+  .bloqueio h3 { font-size: 1rem; margin-bottom: .4rem; }
+  .bloqueio p { color: var(--muted); font-size: .83rem; }
+  .countdown { color: var(--purple); font-weight: 700; font-size: 1.1rem; margin-top: .5rem; }
+
+  /* Sucesso */
+  #telaOk { display: none; text-align: center; }
+  #telaOk .check { font-size: 3rem; margin-bottom: 1rem; }
+  #telaOk h2 { font-size: 1.1rem; margin-bottom: .4rem; }
+  #telaOk p { color: var(--muted); font-size: .85rem; margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <!-- FORM -->
+  <div id="telaForm">
+    <div class="logo">
+      <div class="badge">🔐 Área restrita</div>
+      <h1>TAKE <span>GIRLS</span></h1>
+      <p>Acesso exclusivo da equipe</p>
+    </div>
+
+    <div class="form-group">
+      <label>WhatsApp</label>
+      <div class="phone-wrap">
+        <div class="phone-prefix">🇧🇷 +55</div>
+        <input type="tel" id="telefone" placeholder="(11) 99999-9999"
+               maxlength="15" oninput="mascaraTelefone(this)">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Senha</label>
+      <div class="senha-wrap">
+        <input type="password" id="senha" placeholder="••••••••"
+               onkeydown="if(event.key==='Enter') entrar()">
+        <button class="toggle-senha" type="button" onclick="toggleSenha()" id="btnOlho">👁</button>
+      </div>
+    </div>
+
+    <button class="btn-main" id="btnEntrar" onclick="entrar()">ENTRAR NO PAINEL</button>
+
+    <div class="erro-box" id="erroBox"></div>
+
+    <!-- Bloqueio por tentativas -->
+    <div class="bloqueio" id="bloqueioBox">
+      <div class="icon">🔒</div>
+      <h3>Acesso temporariamente bloqueado</h3>
+      <p>Muitas tentativas incorretas. Aguarde:</p>
+      <div class="countdown" id="countdown"></div>
+    </div>
+
+    <div class="voltar">
+      <a href="login-cliente.html">← Voltar para a loja</a>
+    </div>
+  </div>
+
+  <!-- SUCESSO -->
+  <div id="telaOk">
+    <div class="check">✅</div>
+    <h2 id="boasVindas"></h2>
+    <p>Redirecionando para o painel...</p>
+    <div style="height: 4px; background: var(--surface2); border-radius: 4px; margin: 1rem 0; overflow: hidden;">
+      <div id="barraProgresso" style="height:100%;background:var(--purple);width:0%;transition:width 2s linear;border-radius:4px;"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── ADMINS CADASTRADAS ────────────────────────────────────────────────────────
+// Para adicionar/remover admin: edite este array.
+// telefone: somente números (sem máscara), sem DDI
+// senha: escolha senhas diferentes para cada uma!
+const ADMINS = [
+  { nome: 'Giovana', telefone: '4298058724', senha: '123' },
+  { nome: 'Baby',        telefone: '42998243101', senha: '1234' },
+];
+// ──────────────────────────────────────────────────────────────────────────────
+
+const MAX_TENTATIVAS = 5;
+const BLOQUEIO_MS = 5 * 60 * 1000; // 5 minutos
+
+let tentativas = parseInt(sessionStorage.getItem('tg_tentativas') || '0');
+let bloqueadoAte = parseInt(sessionStorage.getItem('tg_bloqueado') || '0');
+let timerCountdown;
+
+function mascaraTelefone(input) {
+  let v = input.value.replace(/\D/g, '');
+  if (v.length > 11) v = v.slice(0, 11);
+  if (v.length > 6)      v = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+  else if (v.length > 2) v = `(${v.slice(0,2)}) ${v.slice(2)}`;
+  input.value = v;
+}
+
+function toggleSenha() {
+  const campo = document.getElementById('senha');
+  const olho  = document.getElementById('btnOlho');
+  if (campo.type === 'password') { campo.type = 'text'; olho.textContent = '🙈'; }
+  else { campo.type = 'password'; olho.textContent = '👁'; }
+}
+
+function mostrarErro(msg) {
+  const box = document.getElementById('erroBox');
+  box.textContent = msg;
+  box.style.display = 'block';
+}
+
+function limparErro() {
+  document.getElementById('erroBox').style.display = 'none';
+}
+
+function entrar() {
+  limparErro();
+
+  // Verifica bloqueio
+  if (Date.now() < bloqueadoAte) { iniciarCountdown(); return; }
+
+  const telRaw = document.getElementById('telefone').value.replace(/\D/g, '');
+  const senha  = document.getElementById('senha').value;
+
+  if (!telRaw || !senha) {
+    mostrarErro('Preencha WhatsApp e senha.'); return;
+  }
+
+  const admin = ADMINS.find(a => a.telefone === telRaw && a.senha === senha);
+
+  if (!admin) {
+    tentativas++;
+    sessionStorage.setItem('tg_tentativas', tentativas);
+    const restam = MAX_TENTATIVAS - tentativas;
+
+    if (tentativas >= MAX_TENTATIVAS) {
+      bloqueadoAte = Date.now() + BLOQUEIO_MS;
+      sessionStorage.setItem('tg_bloqueado', bloqueadoAte);
+      tentativas = 0;
+      sessionStorage.setItem('tg_tentativas', '0');
+      iniciarCountdown();
+    } else {
+      mostrarErro(`WhatsApp ou senha incorretos. ${restam} tentativa${restam === 1 ? '' : 's'} restante${restam === 1 ? '' : 's'}.`);
+      document.getElementById('senha').value = '';
+      document.getElementById('senha').focus();
+    }
+    return;
+  }
+
+  // Sucesso
+  tentativas = 0;
+  sessionStorage.setItem('tg_tentativas', '0');
+  sessionStorage.setItem('tg_bloqueado', '0');
+
+  const token = { nome: admin.nome, tel: telRaw, expira: Date.now() + 8 * 60 * 60 * 1000 };
+  localStorage.setItem('tg_admin_token', JSON.stringify(token));
+
+  document.getElementById('telaForm').style.display = 'none';
+  const telaOk = document.getElementById('telaOk');
+  telaOk.style.display = 'block';
+  document.getElementById('boasVindas').textContent = `Bem-vinda, ${admin.nome.split(' ')[0]}! 💜`;
+
+  setTimeout(() => {
+    document.getElementById('barraProgresso').style.width = '100%';
+  }, 50);
+  setTimeout(() => {
+    window.location.href = 'admin-takegirls.html';
+  }, 2200);
+}
+
+function iniciarCountdown() {
+  document.getElementById('btnEntrar').disabled = true;
+  document.getElementById('bloqueioBox').style.display = 'block';
+  limparErro();
+
+  clearInterval(timerCountdown);
+  timerCountdown = setInterval(() => {
+    const restam = bloqueadoAte - Date.now();
+    if (restam <= 0) {
+      clearInterval(timerCountdown);
+      document.getElementById('bloqueioBox').style.display = 'none';
+      document.getElementById('btnEntrar').disabled = false;
+      document.getElementById('countdown').textContent = '';
+      return;
+    }
+    const m = Math.floor(restam / 60000);
+    const s = Math.floor((restam % 60000) / 1000);
+    document.getElementById('countdown').textContent =
+      `${m}:${String(s).padStart(2, '0')}`;
+  }, 500);
+}
+
+// Verifica se já está logado
+const token = localStorage.getItem('tg_admin_token');
+if (token) {
+  try {
+    const t = JSON.parse(token);
+    if (Date.now() < t.expira) {
+      window.location.href = 'admin-takegirls.html';
+    } else {
+      localStorage.removeItem('tg_admin_token');
+    }
+  } catch { localStorage.removeItem('tg_admin_token'); }
+}
+
+// Inicia countdown se ainda bloqueado
+if (Date.now() < bloqueadoAte) iniciarCountdown();
+</script>
+</body>
+</html>

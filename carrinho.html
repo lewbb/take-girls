@@ -1,0 +1,454 @@
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --brand:#9B30FF;--brand-dk:#7B1FCC;--brand-lt:rgba(155,48,255,0.08);
+  --bg:#0a0a0a;--s1:#111;--s2:#1a1a1a;--s3:#222;
+  --bd:rgba(155,48,255,0.2);--bd2:rgba(155,48,255,0.5);
+  --tx:#fff;--tx2:#aaa;--tx3:#555;
+  --green:#22c55e;--red:#ef4444;
+}
+body{font-family:Inter,sans-serif;background:var(--bg);color:var(--tx);min-height:600px}
+
+/* STEPPER */
+.stepper{display:flex;align-items:center;padding:1.5rem 2rem;border-bottom:1px solid var(--bd);gap:0;overflow-x:auto}
+.step{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;border:1.5px solid var(--bd);color:var(--tx2);transition:all .3s}
+.step-num.active{background:var(--brand);border-color:var(--brand);color:#fff}
+.step-num.done{background:var(--green);border-color:var(--green);color:#fff;font-size:14px}
+.step-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx2)}
+.step-label.active{color:var(--brand)}
+.step-label.done{color:var(--green)}
+.step-line{width:40px;height:1px;background:var(--bd);flex-shrink:0;margin:0 4px}
+.step-line.done{background:var(--green)}
+
+/* LAYOUT */
+.checkout-layout{display:grid;grid-template-columns:1fr 340px;gap:0;min-height:520px}
+@media(max-width:700px){.checkout-layout{grid-template-columns:1fr}}
+
+/* LEFT PANEL */
+.left-panel{padding:2rem;border-right:1px solid var(--bd)}
+.panel-title{font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:1.5rem;color:var(--tx);display:flex;align-items:center;gap:10px}
+.panel-title i{color:var(--brand);font-size:18px}
+
+/* FORMS */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.form-col{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.form-col label{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--tx2)}
+.form-col input,.form-col select{
+  background:var(--s2);border:1px solid var(--bd);border-radius:4px;
+  padding:10px 12px;color:var(--tx);font-size:13px;font-family:inherit;
+  outline:none;transition:border-color .2s;width:100%
+}
+.form-col input:focus,.form-col select:focus{border-color:var(--brand)}
+.form-col select option{background:#1a1a1a;color:#fff}
+.form-col input::placeholder{color:var(--tx3)}
+
+/* PAYMENT METHODS */
+.pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem}
+.pay-card{
+  border:1.5px solid var(--bd);border-radius:6px;padding:14px 16px;
+  cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px
+}
+.pay-card:hover{border-color:var(--bd2);background:var(--brand-lt)}
+.pay-card.selected{border-color:var(--brand);background:var(--brand-lt)}
+.pay-card i{font-size:20px;color:var(--tx2)}
+.pay-card.selected i{color:var(--brand)}
+.pay-card-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.pay-card.selected .pay-card-label{color:var(--brand)}
+.pay-card-sub{font-size:10px;color:var(--tx3);margin-top:2px}
+
+/* PIX BLOCK */
+.pix-block{background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:1.5rem;text-align:center}
+.pix-qr{width:120px;height:120px;margin:0 auto 12px;background:var(--s3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--tx3);letter-spacing:1px;text-transform:uppercase;border:1px solid var(--bd)}
+.pix-key{font-size:12px;color:var(--tx2);margin-bottom:8px}
+.pix-code{background:var(--s3);border:1px solid var(--bd);border-radius:4px;padding:8px 12px;font-size:11px;color:var(--tx);letter-spacing:0.5px;word-break:break-all;font-family:monospace;margin-bottom:10px;cursor:pointer}
+.copy-btn{background:var(--brand);color:#fff;border:none;border-radius:4px;padding:8px 20px;font-size:11px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:1.5px}
+
+/* CARD FORM */
+.card-form{display:flex;flex-direction:column;gap:10px}
+.card-icons{display:flex;gap:8px;margin-bottom:4px}
+.card-icon{background:var(--s3);border:1px solid var(--bd);border-radius:4px;padding:4px 10px;font-size:11px;color:var(--tx2);font-weight:700}
+
+/* INSTALLMENTS */
+.install-select{margin-top:10px}
+
+/* BOLETO */
+.boleto-block{background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:1.25rem;display:flex;gap:14px;align-items:flex-start}
+.boleto-block i{font-size:28px;color:var(--brand);flex-shrink:0;margin-top:2px}
+.boleto-info p{font-size:13px;color:var(--tx);margin-bottom:4px;font-weight:600}
+.boleto-info span{font-size:11px;color:var(--tx2)}
+
+/* RIGHT PANEL (SUMMARY) */
+.right-panel{padding:2rem;background:var(--s1)}
+.summary-title{font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--tx2);margin-bottom:1.25rem}
+.cart-list{display:flex;flex-direction:column;gap:10px;margin-bottom:1.25rem}
+.cart-row{display:flex;gap:10px;align-items:center}
+.cart-emoji{font-size:28px;background:var(--s2);border-radius:4px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--bd)}
+.cart-info{flex:1}
+.cart-name{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
+.cart-qty{font-size:11px;color:var(--tx3)}
+.cart-price{font-size:13px;font-weight:900;color:var(--brand)}
+
+.divider{height:1px;background:var(--bd);margin:1rem 0}
+
+.summary-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px;color:var(--tx2)}
+.summary-row span:last-child{color:var(--tx)}
+.summary-total{display:flex;justify-content:space-between;font-size:16px;font-weight:900;margin-top:4px}
+.summary-total span:last-child{color:var(--brand)}
+
+.coupon-row{display:flex;gap:8px;margin-bottom:1rem}
+.coupon-row input{flex:1;background:var(--s2);border:1px solid var(--bd);border-radius:4px;padding:8px 12px;color:var(--tx);font-size:12px;outline:none;font-family:inherit}
+.coupon-row input:focus{border-color:var(--brand)}
+.coupon-row button{background:transparent;border:1px solid var(--bd);border-radius:4px;padding:8px 14px;color:var(--tx2);font-size:11px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;transition:all .2s}
+.coupon-row button:hover{border-color:var(--brand);color:var(--brand)}
+.coupon-ok{font-size:11px;color:var(--green);margin-bottom:8px;display:none}
+
+/* CTA */
+.cta-btn{
+  width:100%;background:var(--brand);color:#fff;border:none;border-radius:4px;
+  padding:15px;font-size:12px;font-weight:800;cursor:pointer;
+  text-transform:uppercase;letter-spacing:2px;margin-top:1rem;
+  transition:background .2s;display:flex;align-items:center;justify-content:center;gap:8px
+}
+.cta-btn:hover{background:var(--brand-dk)}
+.back-btn{
+  background:transparent;border:1px solid var(--bd);color:var(--tx2);border-radius:4px;
+  padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;
+  text-transform:uppercase;letter-spacing:1px;margin-top:10px;width:100%;
+  transition:border-color .2s
+}
+.back-btn:hover{border-color:var(--bd2)}
+
+/* DELIVERY OPTIONS */
+.delivery-opts{display:flex;flex-direction:column;gap:10px;margin-bottom:1.5rem}
+.delivery-opt{border:1.5px solid var(--bd);border-radius:6px;padding:12px 16px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:space-between}
+.delivery-opt:hover{border-color:var(--bd2)}
+.delivery-opt.selected{border-color:var(--brand);background:var(--brand-lt)}
+.delivery-left{display:flex;align-items:center;gap:10px}
+.delivery-left i{font-size:18px;color:var(--tx2)}
+.delivery-opt.selected .delivery-left i{color:var(--brand)}
+.delivery-name{font-size:13px;font-weight:700}
+.delivery-eta{font-size:11px;color:var(--tx3)}
+.delivery-price{font-size:14px;font-weight:900;color:var(--brand)}
+.delivery-price.free{color:var(--green)}
+
+/* SUCCESS */
+.success-view{padding:3rem 2rem;text-align:center;grid-column:1/-1}
+.success-icon{width:72px;height:72px;border-radius:50%;background:rgba(34,197,94,.15);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:32px}
+.success-view h2{font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:-0.5px;margin-bottom:8px}
+.success-view p{font-size:14px;color:var(--tx2);max-width:360px;margin:0 auto 2rem;line-height:1.6}
+.order-box{background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:1.25rem;max-width:380px;margin:0 auto 1.5rem;text-align:left}
+.order-box-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px}
+.order-box-row:last-child{margin-bottom:0;font-weight:900;font-size:15px;border-top:1px solid var(--bd);padding-top:8px;margin-top:4px}
+.order-box-row span:last-child{color:var(--brand)}
+.wpp-btn{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;border:none;border-radius:4px;padding:13px 28px;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:1.5px;text-transform:uppercase}
+</style>
+
+<div id="app">
+  <div class="stepper" id="stepper"></div>
+  <div class="checkout-layout" id="main"></div>
+</div>
+
+<script>
+const CART=[
+  {id:1,name:'Set Velvet Roxo',qty:1,price:279,emoji:'💜'},
+  {id:2,name:'Top Corset Preto',qty:2,price:129,emoji:'🖤'},
+];
+const WHATSAPP='5500000000000';
+
+let state={
+  step:1,
+  address:{nome:'',email:'',tel:'',cep:'',rua:'',num:'',comp:'',bairro:'',cidade:'',uf:''},
+  delivery:'pac',
+  payment:'pix',
+  installments:'1',
+  coupon:'',couponOk:false,
+  card:{num:'',nome:'',val:'',cvv:''}
+};
+
+const STEPS=[
+  {label:'Carrinho',icon:'ti-shopping-bag'},
+  {label:'Endereço',icon:'ti-map-pin'},
+  {label:'Entrega',icon:'ti-truck'},
+  {label:'Pagamento',icon:'ti-credit-card'},
+  {label:'Confirmação',icon:'ti-circle-check'},
+];
+
+const DELIVERY={
+  pac:{name:'PAC — Correios',eta:'8 a 12 dias úteis',price:18.90,icon:'ti-package'},
+  sedex:{name:'SEDEX — Correios',eta:'2 a 4 dias úteis',price:34.90,icon:'ti-bolt'},
+  free:{name:'Frete grátis',eta:'10 a 15 dias úteis',price:0,icon:'ti-gift'},
+};
+
+function subtotal(){return CART.reduce((s,i)=>s+i.price*i.qty,0)}
+function frete(){return DELIVERY[state.delivery].price}
+function desconto(){return state.couponOk?subtotal()*0.1:0}
+function total(){return subtotal()+frete()-desconto()}
+function fmt(n){return'R$ '+n.toFixed(2).replace('.',',')}
+
+function renderStepper(){
+  const s=document.getElementById('stepper');
+  s.innerHTML=STEPS.map((st,i)=>{
+    const n=i+1;
+    const done=n<state.step,active=n===state.step;
+    return`
+      ${i>0?`<div class="step-line${done?' done':''}"></div>`:''}
+      <div class="step">
+        <div class="step-num${active?' active':''}${done?' done':''}">${done?'✓':n}</div>
+        <div class="step-label${active?' active':''}${done?' done':''}">${st.label}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function summaryPanel(){
+  const d=DELIVERY[state.delivery];
+  return`
+    <div class="right-panel">
+      <div class="summary-title">Resumo do pedido</div>
+      <div class="cart-list">
+        ${CART.map(i=>`
+          <div class="cart-row">
+            <div class="cart-emoji">${i.emoji}</div>
+            <div class="cart-info">
+              <div class="cart-name">${i.name}</div>
+              <div class="cart-qty">Qtd: ${i.qty}</div>
+            </div>
+            <div class="cart-price">${fmt(i.price*i.qty)}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="coupon-row">
+        <input id="couponInput" placeholder="Código de desconto" value="${state.coupon}" oninput="state.coupon=this.value">
+        <button onclick="applyCoupon()">Aplicar</button>
+      </div>
+      <div class="coupon-ok" id="couponOk" style="display:${state.couponOk?'block':'none'}">✓ Cupom TAKE10 aplicado — 10% off</div>
+      <div class="divider"></div>
+      <div class="summary-row"><span>Subtotal</span><span>${fmt(subtotal())}</span></div>
+      <div class="summary-row"><span>Frete</span><span style="color:${frete()===0?'#22c55e':'inherit'}">${frete()===0?'Grátis':fmt(frete())}</span></div>
+      ${state.couponOk?`<div class="summary-row"><span>Desconto</span><span style="color:#22c55e">-${fmt(desconto())}</span></div>`:''}
+      <div class="divider"></div>
+      <div class="summary-total"><span>Total</span><span>${fmt(total())}</span></div>
+    </div>
+  `;
+}
+
+function applyCoupon(){
+  const v=document.getElementById('couponInput')?.value.toUpperCase();
+  if(v==='TAKE10'){state.coupon=v;state.couponOk=true;}
+  else{state.couponOk=false;}
+  render();
+}
+
+function step1(){
+  return`
+    <div class="left-panel">
+      <div class="panel-title"><i class="ti ti-shopping-bag" aria-hidden="true"></i> Seu carrinho</div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:2rem">
+        ${CART.map(i=>`
+          <div style="display:flex;gap:12px;align-items:center;background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:12px 14px">
+            <div style="font-size:32px;background:var(--s3);border-radius:4px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;border:1px solid var(--bd)">${i.emoji}</div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.5px">${i.name}</div>
+              <div style="font-size:11px;color:var(--tx3);margin-top:2px">Qtd: ${i.qty}</div>
+            </div>
+            <div style="font-size:15px;font-weight:900;color:var(--brand)">${fmt(i.price*i.qty)}</div>
+          </div>
+        `).join('')}
+      </div>
+      <button class="cta-btn" onclick="go(2)"><i class="ti ti-arrow-right" aria-hidden="true"></i> Ir para endereço</button>
+    </div>
+    ${summaryPanel()}
+  `;
+}
+
+function step2(){
+  const a=state.address;
+  return`
+    <div class="left-panel">
+      <div class="panel-title"><i class="ti ti-user" aria-hidden="true"></i> Seus dados</div>
+      <div class="form-row">
+        <div class="form-col"><label>Nome completo</label><input placeholder="Ana Silva" value="${a.nome}" oninput="state.address.nome=this.value"></div>
+        <div class="form-col"><label>E-mail</label><input placeholder="ana@email.com" value="${a.email}" oninput="state.address.email=this.value"></div>
+      </div>
+      <div class="form-col"><label>Telefone / WhatsApp</label><input placeholder="(44) 99999-0000" value="${a.tel}" oninput="state.address.tel=this.value"></div>
+
+      <div class="panel-title" style="margin-top:1.5rem"><i class="ti ti-map-pin" aria-hidden="true"></i> Endereço de entrega</div>
+      <div class="form-row">
+        <div class="form-col"><label>CEP</label><input placeholder="00000-000" value="${a.cep}" oninput="state.address.cep=this.value" maxlength="9"></div>
+        <div class="form-col"><label>Número</label><input placeholder="42" value="${a.num}" oninput="state.address.num=this.value"></div>
+      </div>
+      <div class="form-col"><label>Rua / Avenida</label><input placeholder="Rua das Flores" value="${a.rua}" oninput="state.address.rua=this.value"></div>
+      <div class="form-row">
+        <div class="form-col"><label>Complemento</label><input placeholder="Apto 12 (opcional)" value="${a.comp}" oninput="state.address.comp=this.value"></div>
+        <div class="form-col"><label>Bairro</label><input placeholder="Centro" value="${a.bairro}" oninput="state.address.bairro=this.value"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-col"><label>Cidade</label><input placeholder="Ponta Grossa" value="${a.cidade}" oninput="state.address.cidade=this.value"></div>
+        <div class="form-col"><label>Estado</label>
+          <select oninput="state.address.uf=this.value">
+            ${['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'].map(u=>`<option${u===a.uf?' selected':''}>${u}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <button class="cta-btn" onclick="go(3)"><i class="ti ti-arrow-right" aria-hidden="true"></i> Escolher entrega</button>
+      <button class="back-btn" onclick="go(1)">← Voltar</button>
+    </div>
+    ${summaryPanel()}
+  `;
+}
+
+function step3(){
+  return`
+    <div class="left-panel">
+      <div class="panel-title"><i class="ti ti-truck" aria-hidden="true"></i> Método de entrega</div>
+      <div class="delivery-opts">
+        ${Object.entries(DELIVERY).map(([k,d])=>`
+          <div class="delivery-opt${state.delivery===k?' selected':''}" onclick="state.delivery='${k}';render()">
+            <div class="delivery-left">
+              <i class="ti ${d.icon}" aria-hidden="true"></i>
+              <div>
+                <div class="delivery-name">${d.name}</div>
+                <div class="delivery-eta">${d.eta}</div>
+              </div>
+            </div>
+            <div class="delivery-price${d.price===0?' free':''}">${d.price===0?'Grátis':fmt(d.price)}</div>
+          </div>
+        `).join('')}
+      </div>
+      <button class="cta-btn" onclick="go(4)"><i class="ti ti-arrow-right" aria-hidden="true"></i> Ir para pagamento</button>
+      <button class="back-btn" onclick="go(2)">← Voltar</button>
+    </div>
+    ${summaryPanel()}
+  `;
+}
+
+function step4(){
+  const payContent=()=>{
+    if(state.payment==='pix') return`
+      <div class="pix-block">
+        <div class="pix-qr">QR CODE</div>
+        <div class="pix-key">Chave PIX: <strong>takegirls@email.com</strong></div>
+        <div class="pix-code" onclick="copyPix()" title="Clique para copiar">00020126580014br.gov.bcb.pix0136takegirls-fake-key-uuid5204000053039865802BR5913TAKE GIRLS6009SAO PAULO62070503***6304ABCD</div>
+        <button class="copy-btn" onclick="copyPix()"><i class="ti ti-copy" aria-hidden="true"></i> Copiar código PIX</button>
+        <p style="font-size:11px;color:var(--tx3);margin-top:12px">Pagamento confirmado em até 5 minutos</p>
+      </div>
+    `;
+    if(state.payment==='cartao') return`
+      <div class="card-form">
+        <div class="card-icons">
+          <span class="card-icon">VISA</span>
+          <span class="card-icon">MASTER</span>
+          <span class="card-icon">ELO</span>
+          <span class="card-icon">AMEX</span>
+        </div>
+        <div class="form-col"><label>Número do cartão</label><input placeholder="0000 0000 0000 0000" maxlength="19" oninput="fmtCard(this)"></div>
+        <div class="form-col"><label>Nome no cartão</label><input placeholder="ANA SILVA" style="text-transform:uppercase"></div>
+        <div class="form-row">
+          <div class="form-col"><label>Validade</label><input placeholder="MM/AA" maxlength="5"></div>
+          <div class="form-col"><label>CVV</label><input placeholder="123" maxlength="4" type="password"></div>
+        </div>
+        <div class="install-select form-col"><label>Parcelas</label>
+          <select onchange="state.installments=this.value;render()">
+            ${[1,2,3,4,5,6].map(n=>{
+              const v=total()/n;
+              return`<option value="${n}"${state.installments==n?' selected':''}>${n}x de ${fmt(v)}${n===1?' (sem juros)':n<=3?' (sem juros)':' (com juros)'}</option>`;
+            }).join('')}
+          </select>
+        </div>
+      </div>
+    `;
+    if(state.payment==='boleto') return`
+      <div class="boleto-block">
+        <i class="ti ti-file-text" aria-hidden="true"></i>
+        <div class="boleto-info">
+          <p>Boleto bancário</p>
+          <span>O boleto será gerado após confirmar o pedido. Vencimento em 3 dias úteis. O pagamento pode levar até 2 dias para compensar.</span>
+        </div>
+      </div>
+    `;
+  };
+  return`
+    <div class="left-panel">
+      <div class="panel-title"><i class="ti ti-credit-card" aria-hidden="true"></i> Método de pagamento</div>
+      <div class="pay-methods">
+        ${[
+          {k:'pix',icon:'ti-qrcode',label:'PIX',sub:'Aprovação imediata'},
+          {k:'cartao',icon:'ti-credit-card',label:'Cartão',sub:'Crédito ou débito'},
+          {k:'boleto',icon:'ti-file-text',label:'Boleto',sub:'Vence em 3 dias'},
+        ].map(m=>`
+          <div class="pay-card${state.payment===m.k?' selected':''}" onclick="state.payment='${m.k}';render()">
+            <i class="ti ${m.icon}" aria-hidden="true"></i>
+            <div>
+              <div class="pay-card-label">${m.label}</div>
+              <div class="pay-card-sub">${m.sub}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      ${payContent()}
+      <button class="cta-btn" style="margin-top:1.5rem" onclick="go(5)"><i class="ti ti-lock" aria-hidden="true"></i> Finalizar pedido</button>
+      <button class="back-btn" onclick="go(3)">← Voltar</button>
+    </div>
+    ${summaryPanel()}
+  `;
+}
+
+function step5(){
+  const orderId='TG'+Math.floor(100000+Math.random()*900000);
+  const d=DELIVERY[state.delivery];
+  return`
+    <div class="success-view">
+      <div class="success-icon">✓</div>
+      <h2>Pedido confirmado!</h2>
+      <p>Seu pedido foi recebido e já está sendo separado com todo o carinho. Você receberá atualizações por WhatsApp.</p>
+      <div class="order-box">
+        <div class="order-box-row"><span>Nº do pedido</span><span style="color:var(--brand)">#${orderId}</span></div>
+        <div class="order-box-row"><span>Entrega</span><span>${d.name}</span></div>
+        <div class="order-box-row"><span>Prazo</span><span>${d.eta}</span></div>
+        <div class="order-box-row"><span>Pagamento</span><span>${{pix:'PIX',cartao:'Cartão',boleto:'Boleto'}[state.payment]}</span></div>
+        <div class="order-box-row"><span>Total</span><span>${fmt(total())}</span></div>
+      </div>
+      <button class="wpp-btn" onclick="msgWpp('${orderId}')">
+        <i class="ti ti-brand-whatsapp" aria-hidden="true"></i>
+        Acompanhar pelo WhatsApp
+      </button>
+    </div>
+  `;
+}
+
+function go(n){state.step=n;render();}
+
+function render(){
+  renderStepper();
+  const m=document.getElementById('main');
+  if(state.step===5){
+    m.style.display='block';
+    m.innerHTML=step5();
+  } else {
+    m.style.display='grid';
+    const views=[null,step1,step2,step3,step4];
+    m.innerHTML=views[state.step]();
+  }
+}
+
+function fmtCard(el){
+  let v=el.value.replace(/\D/g,'').substring(0,16);
+  el.value=v.replace(/(.{4})/g,'$1 ').trim();
+}
+
+function copyPix(){
+  const code=document.querySelector('.pix-code');
+  if(code){navigator.clipboard?.writeText(code.textContent).catch(()=>{});}
+  const btn=document.querySelector('.copy-btn');
+  if(btn){btn.textContent='✓ Copiado!';setTimeout(()=>btn.innerHTML='<i class="ti ti-copy"></i> Copiar código PIX',2000);}
+}
+
+function msgWpp(id){
+  const msg=encodeURIComponent(`Oi! Quero acompanhar meu pedido #${id} 🖤💜`);
+  window.open('https://wa.me/'+WHATSAPP+'?text='+msg,'_blank');
+}
+
+render();
+</script>
