@@ -22,8 +22,6 @@ router.post('/login', async (req, res) => {
 
     const admin = rows[0];
 
-    console.log("ADMIN ENCONTRADO:", admin);
-
     if (!admin) {
       return res.status(401).json({ erro: 'Credenciais inválidas.' });
     }
