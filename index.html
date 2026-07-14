@@ -252,6 +252,40 @@ const PRODUTOS_PADRAO = [
 const WHATSAPP = '554298058724';
 const TG_KEY   = 'tg_produtos'; // mesma chave usada pelo admin
 
+const API_URL = "https://take-girls.onrender.com/api/produtos";
+
+async function buscarProdutos() {
+  try {
+    const resposta = await fetch(API_URL);
+
+    if (!resposta.ok) {
+      throw new Error("Erro na API");
+    }
+
+    const produtos = await resposta.json();
+
+    PRODUCTS = produtos.map(p => ({
+      ...p,
+      name: p.nome,
+      price: p.preco,
+      old: p.preco_promo,
+      cat: mapearCategoria(p.categoria_slug),
+      sub: p.tamanhos,
+      emoji: p.emoji,
+      fav: false
+    }));
+
+    atualizarContadores();
+    renderProducts();
+
+  } catch (erro) {
+    console.error("Erro ao buscar produtos:", erro);
+
+    PRODUCTS = PRODUTOS_PADRAO;
+    renderProducts();
+  }
+}
+
 // ─── Carrega produtos: admin tem prioridade sobre os padrão ──────────────────
 function carregarProdutos() {
   const salvo = localStorage.getItem(TG_KEY);
@@ -265,7 +299,7 @@ function carregarProdutos() {
   return PRODUTOS_PADRAO;
 }
 
-let PRODUCTS = carregarProdutos();
+let PRODUCTS = [];
 let cart = [];
 let currentFilter = 'todos';
 
@@ -440,9 +474,20 @@ window.addEventListener('storage', e => {
   }
 });
 
+function mapearCategoria(cat) {
+  const mapa = {
+    "blusas": "tops",
+    "calcas": "calças",
+    "conjuntos": "conjuntos",
+    "vestidos": "vestidos",
+    "acessorios": "acessorios"
+  };
+
+  return mapa[cat] || cat;
+}
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
-atualizarContadores();
-renderProducts();
+buscarProdutos();
 renderCart();
 </script>
 </body>
