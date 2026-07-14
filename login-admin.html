@@ -254,6 +254,9 @@ const resposta = await fetch('https://take-girls.onrender.com/api/auth/login', {
 
     const dados = await resposta.json();
 
+console.log("STATUS:", resposta.status);
+console.log("DADOS:", dados);
+
 
     if (!resposta.ok) {
 
