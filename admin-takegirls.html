@@ -175,7 +175,7 @@
     <p>Painel Administrativo</p>
 
     <div class="form-group">
-      <label>Usuário</label>
+      <label>Whatsapp</label>
       <input type="text" id="loginUser" placeholder="takegirls" />
     </div>
     <div class="form-group">
@@ -391,14 +391,6 @@ async function login() {
   const err     = document.getElementById('loginErr');
   err.textContent = '';
 
-  // Modo DEMO local (sem backend)
-  if (usuario === 'takegirls' && senha === 'admin123') {
-    token = 'demo-token';
-    localStorage.setItem('tg_token', token);
-    mostrarAdmin();
-    carregarDemoData();
-    return;
-  }
 
   try {
     const r = await fetch(`${API}/api/auth/login`, {

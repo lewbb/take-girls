@@ -56,7 +56,7 @@ router.get('/', async (req, res) => {
 });
 
 // ── GET /api/produtos/admin — lista completa (admin) ─────────
-router.get('/', async (req,res)=>{
+router.get('/admin', auth, async (req,res)=>{
   try {
 
     const { rows } = await pool.query(
@@ -99,16 +99,16 @@ router.post('/', auth, validarProduto, async (req, res) => {
   const erros = validationResult(req);
   if (!erros.isEmpty()) return res.status(400).json({ erros: erros.array() });
 
-  const { nome, descricao, emoji, categoria_id, preco, preco_promo,
+  const { nome, descricao, categoria_id, preco, preco_promo,
           estoque, tamanhos, status, destaque, badge, imagem_url } = req.body;
 
   try {
     const { rows } = await pool.query(
       `INSERT INTO produtos
-        (nome, descricao, emoji, categoria_id, preco, preco_promo, estoque, tamanhos, status, destaque, badge, imagem_url)
+        (nome, descricao, categoria_id, preco, preco_promo, estoque, tamanhos, status, destaque, badge, imagem_url)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
        RETURNING *`,
-      [nome, descricao, emoji || '👗', categoria_id, preco, preco_promo || null,
+      [nome, descricao, categoria_id, preco, preco_promo || null,
        estoque, tamanhos || [], status || 'ativo', destaque || false, badge || null, imagem_url || null]
     );
     res.status(201).json(rows[0]);
@@ -123,17 +123,17 @@ router.put('/:id', auth, validarProduto, async (req, res) => {
   const erros = validationResult(req);
   if (!erros.isEmpty()) return res.status(400).json({ erros: erros.array() });
 
-  const { nome, descricao, emoji, categoria_id, preco, preco_promo,
+  const { nome, descricao, categoria_id, preco, preco_promo,
           estoque, tamanhos, status, destaque, badge, imagem_url } = req.body;
 
   try {
     const { rows } = await pool.query(
       `UPDATE produtos SET
-        nome=$1, descricao=$2, emoji=$3, categoria_id=$4, preco=$5,
-        preco_promo=$6, estoque=$7, tamanhos=$8, status=$9,
-        destaque=$10, badge=$11, imagem_url=$12
-       WHERE id=$13 RETURNING *`,
-      [nome, descricao, emoji, categoria_id, preco, preco_promo || null,
+        nome=$1, descricao=$2, categoria_id=$3, preco=$4,
+        preco_promo=$5, estoque=$6, tamanhos=$7, status=$8,
+        destaque=$9, badge=$10, imagem_url=$11
+       WHERE id=$12 RETURNING *`,
+      [nome, descricao, categoria_id, preco, preco_promo || null,
        estoque, tamanhos || [], status, destaque || false, badge || null,
        imagem_url || null, req.params.id]
     );

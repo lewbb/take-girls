@@ -238,19 +238,41 @@
 
 <script>
 // ─── PRODUTOS PADRÃO (aparecem se o admin ainda não cadastrou nada) ───────────
-const PRODUTOS_PADRAO = [
-  { id:1, name:'Body marsala',    sub:'Calça + Top · P M G GG', price:34.90, old:59.90, cat:'conjuntos',  emoji:'🖤', bg:'#1a0a2e', badge:'sale', fav:false },
-  { id:2, name:'Start Tule Vinho',sub:'Ajustável · PP P M G',   price:34.90, old:69.90, cat:'tops',       emoji:'🖤', bg:'#111',    badge:'new',  fav:false },
-  { id:3, name:'Body Dualipa',    sub:'PU · 36 38 40 42',       price:79.90, old:null,  cat:'vestidos',   emoji:'⚡', bg:'#1a0a1a', badge:'sale', fav:false },
-  { id:4, name:'WIDE LEG ROXO',   sub:'Streetwear · 36 ao 44',  price:209,   old:null,  cat:'calças',     emoji:'🔮', bg:'#0d0019', badge:'new',  fav:false },
-  { id:5, name:'SET MESH BADDIE', sub:'Top + Saia · P M G',     price:239,   old:289,   cat:'conjuntos',  emoji:'💎', bg:'#0a0a1a', badge:'sale', fav:false },
-  { id:6, name:'TOP BANDANA',     sub:'One size · preto',       price:79,    old:null,  cat:'tops',       emoji:'🖤', bg:'#111',    badge:'new',  fav:false },
-  { id:7, name:'MINI DRESS CUT',  sub:'Preto · P M G',          price:219,   old:269,   cat:'vestidos',   emoji:'✦', bg:'#100010', badge:'sale', fav:false },
-  { id:8, name:'CINTO CORRENTE',  sub:'Prata e ouro · único',   price:89,    old:null,  cat:'acessorios', emoji:'💫', bg:'#111',    badge:'new',  fav:false },
-];
+let PRODUCTS = [];
+let cart = [];
+let currentFilter = 'todos';
+
+async function carregarProdutos() {
+  try {
+
+    const resposta = await fetch(
+      'https://take-girls.onrender.com/api/produtos'
+    );
+
+    const dados = await resposta.json();
+
+    PRODUCTS = dados.map(p => ({
+      id: p.id,
+      name: p.nome,
+      sub: p.tamanhos?.join(' ') || p.descricao || '',
+      price: Number(p.preco),
+      old: p.preco_promo ? Number(p.preco_promo) : null,
+      cat: p.categoria_slug || 'todos',
+      emoji: '🖤',
+      bg: '#111',
+      badge: p.badge || '',
+      fav: false,
+      imagem_url: p.imagem_url
+    }));
+
+    renderProducts();
+
+  } catch(error) {
+    console.error('Erro ao buscar produtos:', error);
+  }
+}
 
 const WHATSAPP = '554298058724';
-const TG_KEY   = 'tg_produtos'; // mesma chave usada pelo admin
 
 const API_URL = "https://take-girls.onrender.com/api/produtos";
 
@@ -278,31 +300,15 @@ async function buscarProdutos() {
     atualizarContadores();
     renderProducts();
 
-  } catch (erro) {
+  } 
+
+  catch (erro) {
     console.error("Erro ao buscar produtos:", erro);
 
-    PRODUCTS = PRODUTOS_PADRAO;
+    PRODUCTS = [];
     renderProducts();
-  }
 }
-
-// ─── Carrega produtos: admin tem prioridade sobre os padrão ──────────────────
-function carregarProdutos() {
-  const salvo = localStorage.getItem(TG_KEY);
-  if (salvo) {
-    try {
-      const lista = JSON.parse(salvo);
-      // Filtra só os ativos (status ativo ou sem status = padrão)
-      return lista.filter(p => !p.status || p.status === 'ativo');
-    } catch(e) {}
-  }
-  return PRODUTOS_PADRAO;
 }
-
-let PRODUCTS = [];
-let cart = [];
-let currentFilter = 'todos';
-
 // ─── Atualiza contadores de categoria ────────────────────────────────────────
 function atualizarContadores() {
   ['conjuntos','tops','calças','vestidos','acessorios'].forEach(cat => {
@@ -466,13 +472,6 @@ function openCartWhatsApp() {
 }
 
 // ─── Escuta mudanças do admin em outras abas ──────────────────────────────────
-window.addEventListener('storage', e => {
-  if (e.key === TG_KEY) {
-    PRODUCTS = carregarProdutos();
-    atualizarContadores();
-    renderProducts();
-  }
-});
 
 function mapearCategoria(cat) {
   const mapa = {
