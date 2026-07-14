@@ -56,17 +56,24 @@ router.get('/', async (req, res) => {
 });
 
 // ── GET /api/produtos/admin — lista completa (admin) ─────────
-router.get('/admin', auth, async (req, res) => {
+router.get('/', async (req,res)=>{
   try {
-    const { rows } = await pool.query(`
-      SELECT p.*, c.nome AS categoria_nome, c.slug AS categoria_slug
-      FROM produtos p
-      LEFT JOIN categorias c ON c.id = p.categoria_id
-      ORDER BY p.criado_em DESC
-    `);
+
+    const { rows } = await pool.query(
+      'SELECT * FROM produtos WHERE status = $1',
+      ['ativo']
+    );
+
     res.json(rows);
-  } catch (err) {
-    res.status(500).json({ erro: 'Erro ao buscar produtos.' });
+
+  } catch(error){
+
+    console.error(error);
+
+    res.status(500).json({
+      erro:"Erro ao buscar produtos"
+    });
+
   }
 });
 
