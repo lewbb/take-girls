@@ -97,7 +97,10 @@ router.get('/:id', async (req, res) => {
 // ── POST /api/produtos — criar (admin) ───────────────────────
 router.post('/', auth, validarProduto, async (req, res) => {
   const erros = validationResult(req);
-  if (!erros.isEmpty()) return res.status(400).json({ erros: erros.array() });
+  if (!erros.isEmpty()) {
+  console.log("ERROS DE VALIDAÇÃO:", erros.array());
+  return res.status(400).json({ erros: erros.array() });
+}
 
   const { nome, descricao, categoria_id, preco, preco_promo,
           estoque, tamanhos, status, destaque, badge, imagem_url } = req.body;
