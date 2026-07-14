@@ -226,59 +226,140 @@ function limparErro() {
   document.getElementById('erroBox').style.display = 'none';
 }
 
-function entrar() {
+async function entrar() {
   limparErro();
 
-  // Verifica bloqueio
-  if (Date.now() < bloqueadoAte) { iniciarCountdown(); return; }
-
-  const telRaw = document.getElementById('telefone').value.replace(/\D/g, '');
-  const senha  = document.getElementById('senha').value;
-
-  if (!telRaw || !senha) {
-    mostrarErro('Preencha WhatsApp e senha.'); return;
-  }
-
-  const admin = ADMINS.find(a => a.telefone === telRaw && a.senha === senha);
-
-  if (!admin) {
-    tentativas++;
-    sessionStorage.setItem('tg_tentativas', tentativas);
-    const restam = MAX_TENTATIVAS - tentativas;
-
-    if (tentativas >= MAX_TENTATIVAS) {
-      bloqueadoAte = Date.now() + BLOQUEIO_MS;
-      sessionStorage.setItem('tg_bloqueado', bloqueadoAte);
-      tentativas = 0;
-      sessionStorage.setItem('tg_tentativas', '0');
-      iniciarCountdown();
-    } else {
-      mostrarErro(`WhatsApp ou senha incorretos. ${restam} tentativa${restam === 1 ? '' : 's'} restante${restam === 1 ? '' : 's'}.`);
-      document.getElementById('senha').value = '';
-      document.getElementById('senha').focus();
-    }
+  if (Date.now() < bloqueadoAte) {
+    iniciarCountdown();
     return;
   }
 
-  // Sucesso
-  tentativas = 0;
-  sessionStorage.setItem('tg_tentativas', '0');
-  sessionStorage.setItem('tg_bloqueado', '0');
+  const telRaw = document
+    .getElementById('telefone')
+    .value
+    .replace(/\D/g, '');
 
-  const token = { nome: admin.nome, tel: telRaw, expira: Date.now() + 8 * 60 * 60 * 1000 };
-  localStorage.setItem('tg_admin_token', JSON.stringify(token));
+  const senha = document.getElementById('senha').value;
 
-  document.getElementById('telaForm').style.display = 'none';
-  const telaOk = document.getElementById('telaOk');
-  telaOk.style.display = 'block';
-  document.getElementById('boasVindas').textContent = `Bem-vinda, ${admin.nome.split(' ')[0]}! 💜`;
 
-  setTimeout(() => {
-    document.getElementById('barraProgresso').style.width = '100%';
-  }, 50);
-  setTimeout(() => {
-    window.location.href = 'admin-takegirls.html';
-  }, 2200);
+  if (!telRaw || !senha) {
+    mostrarErro('Preencha WhatsApp e senha.');
+    return;
+  }
+
+
+  try {
+
+    const resposta = await fetch('https://take-girls.onrender.com', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        telefone: telRaw,
+        senha: senha
+      })
+    });
+
+
+    const dados = await resposta.json();
+
+
+    if (!resposta.ok) {
+
+      tentativas++;
+      sessionStorage.setItem('tg_tentativas', tentativas);
+
+      const restam = MAX_TENTATIVAS - tentativas;
+
+
+      if (tentativas >= MAX_TENTATIVAS) {
+
+        bloqueadoAte = Date.now() + BLOQUEIO_MS;
+
+        sessionStorage.setItem(
+          'tg_bloqueado',
+          bloqueadoAte
+        );
+
+        tentativas = 0;
+        sessionStorage.setItem(
+          'tg_tentativas',
+          '0'
+        );
+
+        iniciarCountdown();
+
+      } else {
+
+        mostrarErro(
+          `WhatsApp ou senha incorretos. ${restam} tentativa${restam === 1 ? '' : 's'} restante${restam === 1 ? '' : 's'}.`
+        );
+
+        document.getElementById('senha').value = '';
+        document.getElementById('senha').focus();
+      }
+
+      return;
+    }
+
+
+    // Login aprovado
+
+    tentativas = 0;
+
+    sessionStorage.setItem(
+      'tg_tentativas',
+      '0'
+    );
+
+    sessionStorage.setItem(
+      'tg_bloqueado',
+      '0'
+    );
+
+
+    sessionStorage.setItem(
+      'tg_token',
+      dados.token
+    );
+
+
+    sessionStorage.setItem(
+      'tg_admin',
+      JSON.stringify(dados.admin)
+    );
+
+
+    document.getElementById('telaForm').style.display = 'none';
+
+
+    document.getElementById('telaOk').style.display = 'block';
+
+
+    document.getElementById('boasVindas').textContent =
+      `Bem-vinda, ${dados.admin.nome.split(' ')[0]}! 💜`;
+
+
+    setTimeout(() => {
+      document.getElementById('barraProgresso').style.width = '100%';
+    }, 50);
+
+
+    setTimeout(() => {
+      window.location.href = 'admin-takegirls.html';
+    }, 2200);
+
+
+  } catch (erro) {
+
+    console.error('Erro no login:', erro);
+
+    mostrarErro(
+      'Erro ao conectar com o servidor.'
+    );
+
+  }
 }
 
 function iniciarCountdown() {
