@@ -102,24 +102,36 @@ router.post('/', auth, validarProduto, async (req, res) => {
   return res.status(400).json({ erros: erros.array() });
 }
 
-  const { nome, descricao, categoria_id, preco, preco_promo,
-          estoque, tamanhos, status, destaque, badge, imagem_url } = req.body;
+const { nome, descricao, categoria_id, preco, preco_promo,
+        estoque, tamanhos, status, destaque, badge, imagem_url } = req.body;
 
-  try {
-    const { rows } = await pool.query(
-      `INSERT INTO produtos
-        (nome, descricao, categoria_id, preco, preco_promo, estoque, tamanhos, status, destaque, badge, imagem_url)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
-       RETURNING *`,
-      [nome, descricao, categoria_id, preco, preco_promo || null,
-       estoque, tamanhos || [], status || 'ativo', destaque || false, badge || null, imagem_url || null]
-    );
-    res.status(201).json(rows[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ erro: 'Erro ao criar produto.' });
-  }
-});
+try {
+  const { rows } = await pool.query(
+    `INSERT INTO produtos
+      (nome, descricao, categoria_id, preco, preco_promo, estoque, tamanhos, status, destaque, badge, imagem_url)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+     RETURNING *`,
+    [
+      nome,
+      descricao,
+      categoria_id,
+      preco,
+      preco_promo || null,
+      estoque,
+      tamanhos || [],
+      status || 'ativo',
+      destaque || false,
+      badge || null,
+      imagem_url || null
+    ]
+  );
+
+  res.status(201).json(rows[0]);
+
+} catch (err) {
+  console.error(err);
+  res.status(500).json({ erro: 'Erro ao criar produto.' });
+}
 
 // ── PUT /api/produtos/:id — editar (admin) ───────────────────
 router.put('/:id', auth, validarProduto, async (req, res) => {
