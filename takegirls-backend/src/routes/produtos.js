@@ -132,6 +132,7 @@ try {
   console.error(err);
   res.status(500).json({ erro: 'Erro ao criar produto.' });
 }
+});
 
 // ── PUT /api/produtos/:id — editar (admin) ───────────────────
 router.put('/:id', auth, validarProduto, async (req, res) => {
@@ -191,11 +192,18 @@ router.patch('/:id/estoque', auth, async (req, res) => {
 // ── DELETE /api/produtos/:id — excluir (admin) ───────────────
 router.delete('/:id', auth, async (req, res) => {
   try {
-    await pool.query('DELETE FROM produtos WHERE id=$1', [req.params.id]);
+    await pool.query(
+      'DELETE FROM produtos WHERE id=$1',
+      [req.params.id]
+    );
+
     res.json({ mensagem: 'Produto excluído.' });
+
   } catch (err) {
+    console.error(err);
     res.status(500).json({ erro: 'Erro ao excluir produto.' });
   }
 });
+
 
 module.exports = router;
