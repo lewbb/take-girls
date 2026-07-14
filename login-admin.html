@@ -250,16 +250,16 @@ async function entrar() {
 
   try {
 
-    const resposta = await fetch('https://take-girls.onrender.com', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        telefone: telRaw,
-        senha: senha
-      })
-    });
+const resposta = await fetch('https://take-girls.onrender.com/api/auth/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    telefone: telRaw,
+    senha: senha
+  })
+});
 
 
     const dados = await resposta.json();
