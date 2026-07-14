@@ -10,6 +10,8 @@ const router = express.Router();
 router.post('/login', async (req, res) => {
   const { telefone, senha } = req.body;
 
+  console.log("LOGIN RECEBIDO:", telefone, senha);
+
   if (!telefone || !senha) {
     return res.status(400).json({ erro: 'Telefone e senha são obrigatórios.' });
   }
