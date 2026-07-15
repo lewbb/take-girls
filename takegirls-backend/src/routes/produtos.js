@@ -56,7 +56,7 @@ router.get('/', async (req, res) => {
 });
 
 // ── GET /api/produtos/admin — lista completa (admin) ─────────
-router.get('/admin', auth, async (req, res) => {
+router.get('/admin', async (req, res) => {
   try {
 
     const { rows } = await pool.query(
