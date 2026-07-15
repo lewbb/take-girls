@@ -560,7 +560,7 @@ async function salvarProduto() {
     preco_promo: document.getElementById('prodPrecoPromo').value ? parseFloat(document.getElementById('prodPrecoPromo').value) : null,
     estoque:     parseInt(document.getElementById('prodEstoque').value),
     badge:       document.getElementById('prodBadge').value,
-    tamanhos: document.getElementById("tamanhos").value
+    tamanhos: document.getElementById("prodTamanhos").value
   .split(",")
   .map(t => t.trim())
   };

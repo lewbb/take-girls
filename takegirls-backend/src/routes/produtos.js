@@ -9,7 +9,7 @@ const validarProduto = [
   body('nome').notEmpty().withMessage('Nome é obrigatório.'),
   body('preco').isFloat({ min: 0 }).withMessage('Preço inválido.'),
   body('estoque').isInt({ min: 0 }).withMessage('Estoque inválido.'),
-  body('status').isIn(['ativo','pausado','esgotado']).withMessage('Status inválido.'),
+  body('status').isIn(['ativo', 'pausado', 'esgotado']).withMessage('Status inválido.'),
 ];
 
 // ── GET /api/produtos — lista pública (para o site) ──────────
@@ -47,16 +47,16 @@ router.get('/', async (req, res) => {
     const { rows } = await pool.query(query, params);
     res.json(rows);
   } catch (err) {
-  console.error("ERRO PRODUTOS:", err);
-  res.status(500).json({
-    erro: "Erro ao buscar produtos.",
-    detalhe: err.message
-  });
-}
+    console.error("ERRO PRODUTOS:", err);
+    res.status(500).json({
+      erro: "Erro ao buscar produtos.",
+      detalhe: err.message
+    });
+  }
 });
 
 // ── GET /api/produtos/admin — lista completa (admin) ─────────
-router.get('/admin', auth, async (req,res)=>{
+router.get('/admin', auth, async (req, res) => {
   try {
 
     const { rows } = await pool.query(
@@ -66,12 +66,12 @@ router.get('/admin', auth, async (req,res)=>{
 
     res.json(rows);
 
-  } catch(error){
+  } catch (error) {
 
     console.error(error);
 
     res.status(500).json({
-      erro:"Erro ao buscar produtos"
+      erro: "Erro ao buscar produtos"
     });
 
   }
@@ -98,40 +98,40 @@ router.get('/:id', async (req, res) => {
 router.post('/', auth, validarProduto, async (req, res) => {
   const erros = validationResult(req);
   if (!erros.isEmpty()) {
-  console.log("ERROS DE VALIDAÇÃO:", erros.array());
-  return res.status(400).json({ erros: erros.array() });
-}
+    console.log("ERROS DE VALIDAÇÃO:", erros.array());
+    return res.status(400).json({ erros: erros.array() });
+  }
 
-const { nome, descricao, categoria_id, preco, preco_promo,
-        estoque, tamanhos, status, destaque, badge, imagem_url } = req.body;
+  const { nome, descricao, categoria_id, preco, preco_promo,
+    estoque, tamanhos, status, destaque, badge, imagem_url } = req.body;
 
-try {
-  const { rows } = await pool.query(
-    `INSERT INTO produtos
+  try {
+    const { rows } = await pool.query(
+      `INSERT INTO produtos
       (nome, descricao, categoria_id, preco, preco_promo, estoque, tamanhos, status, destaque, badge, imagem_url)
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
      RETURNING *`,
-    [
-      nome,
-      descricao,
-      categoria_id,
-      preco,
-      preco_promo || null,
-      estoque,
-      tamanhos || [],
-      status || 'ativo',
-      destaque || false,
-      badge || null,
-      imagem_url || null
-    ]
-  );
+      [
+        nome,
+        descricao,
+        categoria_id,
+        preco,
+        preco_promo || null,
+        estoque,
+       Array.isArray(tamanhos) ? tamanhos : [],
+        status || 'ativo',
+        destaque || false,
+        badge || null,
+        imagem_url || null
+      ]
+    );
 
-  res.status(201).json(rows[0]);
+    res.status(201).json(rows[0]);
 
-} catch (err) {
-  console.error(err);
-  res.status(500).json({ erro: 'Erro ao criar produto.' });
-}
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao criar produto.' });
+  }
 });
 
 // ── PUT /api/produtos/:id — editar (admin) ───────────────────
@@ -140,7 +140,7 @@ router.put('/:id', auth, validarProduto, async (req, res) => {
   if (!erros.isEmpty()) return res.status(400).json({ erros: erros.array() });
 
   const { nome, descricao, categoria_id, preco, preco_promo,
-          estoque, tamanhos, status, destaque, badge, imagem_url } = req.body;
+    estoque, tamanhos, status, destaque, badge, imagem_url } = req.body;
 
   try {
     const { rows } = await pool.query(
@@ -150,8 +150,8 @@ router.put('/:id', auth, validarProduto, async (req, res) => {
         destaque=$9, badge=$10, imagem_url=$11
        WHERE id=$12 RETURNING *`,
       [nome, descricao, categoria_id, preco, preco_promo || null,
-       estoque, tamanhos || [], status, destaque || false, badge || null,
-       imagem_url || null, req.params.id]
+        estoque, tamanhos || [], status, destaque || false, badge || null,
+        imagem_url || null, req.params.id]
     );
     if (!rows[0]) return res.status(404).json({ erro: 'Produto não encontrado.' });
     res.json(rows[0]);
