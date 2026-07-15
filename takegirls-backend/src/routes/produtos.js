@@ -215,5 +215,51 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// ── POST /api/produtos/:id/imagem — adicionar imagem ────────
+router.post('/:id/imagem', auth, upload.single('foto'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ erro: 'Nenhuma imagem enviada.' });
+    }
+
+    const imagem_url = req.file.path.replace('\\', '/');
+
+    const { rows } = await pool.query(
+      'UPDATE produtos SET imagem_url=$1 WHERE id=$2 RETURNING *',
+      [imagem_url, req.params.id]
+    );
+
+    if (!rows[0]) {
+      return res.status(404).json({ erro: 'Produto não encontrado.' });
+    }
+
+    res.json(rows[0]);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao adicionar imagem.' });
+  }
+});
+
+
+// ── DELETE /api/produtos/:id/imagem — remover imagem ────────
+router.delete('/:id/imagem', auth, async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'UPDATE produtos SET imagem_url=NULL WHERE id=$1 RETURNING *',
+      [req.params.id]
+    );
+
+    if (!rows[0]) {
+      return res.status(404).json({ erro: 'Produto não encontrado.' });
+    }
+
+    res.json({ mensagem: 'Imagem removida.' });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao remover imagem.' });
+  }
+});
 
 module.exports = router;

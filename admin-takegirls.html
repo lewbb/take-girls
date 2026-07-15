@@ -725,8 +725,8 @@ async function enviarImagem() {
   }
 
   try {
-    const formData = new FormData();
-    formData.append('imagem', arquivoSelecionado);
+const formData = new FormData();
+formData.append('foto', arquivoSelecionado);
 
     // Progresso simulado (fetch não expõe XHR progress)
     let p = 0;
