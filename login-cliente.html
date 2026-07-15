@@ -153,25 +153,37 @@
       <div class="erro" id="erroTelefone">Número inválido. Digite DDD + número.</div>
     </div>
 
-    <button class="btn-main" id="btnEntrar" onclick="entrar()">CONTINUAR</button>
+<button class="btn-main" id="btnEntrar" onclick="entrar()">CONTINUAR</button>
 
-    <div class="divider">ou</div>
-    <div class="admin-link">
-      É da equipe Take Girls? <a href="login-admin.html">Entrar como admin →</a>
-    </div>
+<div class="divider">ou</div>
+
+<div class="admin-link">
+  É da equipe Take Girls?
+  <a href="login-admin.html">Entrar como admin →</a>
+</div>
+
+<div class="admin-link" style="margin-top: 1rem;">
+  Quer apenas conhecer a loja?
+<a href="index.html" onclick="sessionStorage.setItem('permitirLoja','true')">
+</div>
   </div>
 
   <!-- LOGADA -->
-  <div id="telaLogada">
-    <div class="avatar" id="avatarLetra"></div>
-    <h2 id="nomeLogado"></h2>
-    <p id="telLogado"></p>
-    <p style="color: #9B30FF; font-size: .9rem; margin-bottom: 1.5rem;">✅ Identificada! Você pode continuar comprando.</p>
-    <a href="index.html" style="display:block; text-decoration:none;">
-      <button class="btn-main" style="margin-bottom: .75rem;">VER A LOJA →</button>
-    </a>
-    <button class="btn-ghost" onclick="sair()">Não sou eu — trocar conta</button>
-  </div>
+<div id="telaLogada">
+  <div class="avatar" id="avatarLetra"></div>
+  <h2 id="nomeLogado"></h2>
+  <p id="telLogado"></p>
+
+  <a href="index.html" style="display:block; text-decoration:none;">
+    <button class="btn-main" style="margin-bottom: .75rem;">
+      VER A LOJA →
+    </button>
+  </a>
+
+  <button class="btn-ghost" onclick="sair()">
+    Não sou eu — trocar conta
+  </button>
+</div>
 
 </div>
 

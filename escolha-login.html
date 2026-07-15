@@ -1,74 +1,31 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Escolha de Acesso</title>
-
-<style>
-  body {
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: #0a0a0a;
-    font-family: Arial;
-    color: white;
-  }
-
-  h1 {
-    margin-bottom: 30px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
-
-  .btn {
-    padding: 15px 30px;
-    margin: 10px;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    border-radius: 4px;
-  }
-
-  .cliente {
-    background: #9B30FF;
-    color: white;
-  }
-
-  .admin {
-    background: #222;
-    color: white;
-    border: 1px solid #9B30FF;
-  }
-
-  .btn:hover {
-    opacity: 0.8;
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>Entrar - Take Girls</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<h1>Escolha seu acesso</h1>
+<div class="login-container">
 
-<button class="btn cliente" onclick="cliente()">Entrar como Cliente</button>
-<button class="btn admin" onclick="admin()">Entrar como Admin</button>
+  <h1>Take Girls</h1>
+  <p>Escolha como deseja entrar</p>
 
-<script>
-function cliente() {
-  window.location.href = "login-cliente.html";
-}
+  <a href="login-cliente.html">
+    Entrar como cliente
+  </a>
 
-function admin() {
-  window.location.href = "login-admin.html";
-}
-</script>
+  <a href="login-admin.html">
+    Entrar como admin
+  </a>
+
+  <a href="index.html">
+    Continuar sem cadastro
+  </a>
+
+</div>
 
 </body>
 </html>

@@ -423,22 +423,6 @@ function mostrarAdmin() {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('adminScreen').style.display = 'block';
 }
-
-// ──────────────────────────────────────────────────────────────
-// DEMO DATA (quando não há backend)
-// ──────────────────────────────────────────────────────────────
-function carregarDemoData() {
-  produtos = [
-    { id:1, nome:'Set Cropped Neon', emoji:'🔥', categoria:'Sets', preco:159.90, preco_promo:null, estoque:8, status:'ativo', badge:'new', tamanhos:'PP,P,M,G', imagem_url:null },
-    { id:2, nome:'Top Veludo Dark', emoji:'💜', categoria:'Tops', preco:89.90, preco_promo:69.90, estoque:15, status:'ativo', badge:'sale', tamanhos:'P,M,G', imagem_url:null },
-    { id:3, nome:'Saia Mini Plissada', emoji:'✨', categoria:'Minis', preco:119.90, preco_promo:null, estoque:0, status:'inativo', badge:'', tamanhos:'P,M,G,GG', imagem_url:null },
-    { id:4, nome:'Short Cargo Baddie', emoji:'🖤', categoria:'Bottoms', preco:109.90, preco_promo:null, estoque:12, status:'ativo', badge:'new', tamanhos:'PP,P,M,G,GG', imagem_url:null },
-  ];
-  salvarNoLocalStorage();
-  atualizarStats();
-  renderProdutos();
-}
-
 // CARREGAR PRODUTOS (backend)
 // ──────────────────────────────────────────────────────────────
 async function carregarProdutos() {
@@ -584,6 +568,9 @@ async function salvarProduto() {
   try {
     const url    = id ? `${API}/api/produtos/${id}` : `${API}/api/produtos`;
     const method = id ? 'PUT' : 'POST';
+
+    console.log("Token:", token);
+
     const r = await fetch(url, {
       method,
       headers: { 'Content-Type':'application/json', Authorization:`Bearer ${token}` },
@@ -611,12 +598,25 @@ async function excluirProduto(id) {
   }
 
   try {
-    await fetch(`${API}/api/produtos/${id}`, {
-      method:'DELETE', headers:{ Authorization:`Bearer ${token}` }
+    const r = await fetch(`${API}/api/produtos/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
+
+    const resposta = await r.json();
+    console.log("DELETE:", resposta);
+
+    if (!r.ok) {
+      throw new Error(resposta.erro || 'Erro ao excluir');
+    }
+
     await carregarProdutos();
     toast('Produto excluído!', 'success');
-  } catch {
+
+  } catch (err) {
+    console.error(err);
     toast('Erro ao excluir', 'error');
   }
 }
@@ -805,21 +805,7 @@ function toast(msg, tipo = 'success') {
 // Auto-login se já tem token
 if (token) {
   mostrarAdmin();
-  // Carrega do localStorage se existir, senão usa demo data
-  const salvo = localStorage.getItem(TG_KEY);
-  if (salvo) {
-    try {
-      const lista = JSON.parse(salvo);
-      // Converte de volta pro formato admin
-      produtos = lista.map(p => ({
-        id: p.id, nome: p.name, emoji: p.emoji, categoria: lojaParaCat(p.cat),
-        preco: p.price, preco_promo: p.old || null, estoque: p.estoque || 0,
-        status: p.status || 'ativo', badge: p.badge || '', tamanhos: p.sub || '',
-        imagem_url: p.imagem_url || null, bg: p.bg || '#111'
-      }));
-      atualizarStats(); renderProdutos();
-    } catch(e) { carregarDemoData(); }
-  } else { carregarDemoData(); }
+  carregarProdutos();
 }
 
 function lojaParaCat(cat) {

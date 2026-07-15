@@ -151,7 +151,17 @@
   @media (max-width: 600px) { nav { padding: 0.75rem 1rem; } .nav-links { display: none; } .hero h1 { font-size: 36px; } .section { padding: 2rem 1rem; } }
 </style>
 </head>
+</a>
 <body>
+
+<script>
+const entrou = sessionStorage.getItem("permitirLoja");
+
+if (!entrou) {
+  window.location.href = "login-cliente.html";
+}
+</script>
+</script>
 
 <div class="promo">
   ✦ FRETE GRÁTIS acima de R$199 &nbsp;·&nbsp; use o código <strong>TAKE10</strong> para 10% off ✦
