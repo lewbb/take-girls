@@ -74,7 +74,7 @@ telefone = telefone.replace(/\D/g, '');
 
 // POST /api/auth/setup
 // Cria os dois administradores
-router.post('/setup', auth, async (req, res) => {
+router.post('/setup', async (req, res) => {
   try {
 
     const { rows } = await pool.query(
