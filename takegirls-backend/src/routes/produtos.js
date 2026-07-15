@@ -95,7 +95,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // ── POST /api/produtos — criar (admin) ───────────────────────
-router.post('/', auth, validarProduto, async (req, res) => {
+router.post('/', validarProduto, async (req, res) => {
   const erros = validationResult(req);
   if (!erros.isEmpty()) {
     console.log("ERROS DE VALIDAÇÃO:", erros.array());
