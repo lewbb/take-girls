@@ -3,6 +3,9 @@ const jwt = require('jsonwebtoken');
 function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
 
+  console.log("AUTH HEADER:", authHeader);
+  console.log("SECRET EXISTE:", !!process.env.JWT_SECRET);
+
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ erro: 'Token não fornecido.' });
   }
@@ -11,17 +14,18 @@ function authMiddleware(req, res, next) {
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("TOKEN OK:", payload);
+
     req.admin = payload;
     next();
-} catch (err) {
-  console.error("JWT ERROR:", err.message);
-  console.error("Authorization:", req.headers.authorization);
-  console.error("JWT_SECRET existe?", !!process.env.JWT_SECRET);
 
-  return res.status(401).json({
-    erro: "Token inválido ou expirado."
-  });
-}
+  } catch (err) {
+    console.log("ERRO JWT:", err.message);
+
+    return res.status(401).json({
+      erro: 'Token inválido ou expirado.'
+    });
+  }
 }
 
 module.exports = authMiddleware;

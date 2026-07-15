@@ -7,8 +7,10 @@ const router = express.Router();
 
 
 // POST /api/auth/login
-router.post('/login', async (req, res) => {
-  const { telefone, senha } = req.body;
+router.post('/login', auth, async (req, res) => {
+ let { telefone, senha } = req.body;
+
+telefone = telefone.replace(/\D/g, '');
 
   console.log("LOGIN RECEBIDO:", telefone, senha);
 
@@ -72,7 +74,7 @@ router.post('/login', async (req, res) => {
 
 // POST /api/auth/setup
 // Cria os dois administradores
-router.post('/setup', async (req, res) => {
+router.post('/setup', auth, async (req, res) => {
   try {
 
     const { rows } = await pool.query(

@@ -13,7 +13,7 @@ const validarProduto = [
 ];
 
 // ── GET /api/produtos — lista pública (para o site) ──────────
-router.get('/', async (req, res) => {
+router.get('/', auth,async (req, res) => {
   try {
     const { categoria, status, destaque, busca } = req.query;
     let query = `
@@ -56,7 +56,7 @@ router.get('/', async (req, res) => {
 });
 
 // ── GET /api/produtos/admin — lista completa (admin) ─────────
-router.get('/admin', async (req, res) => {
+router.get('/admin', auth,async (req, res) => {
   try {
 
     const { rows } = await pool.query(
@@ -78,7 +78,7 @@ router.get('/admin', async (req, res) => {
 });
 
 // ── GET /api/produtos/:id ─────────────────────────────────────
-router.get('/:id', async (req, res) => {
+router.get('/:id', auth, async (req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT p.*, c.nome AS categoria_nome, c.slug AS categoria_slug
