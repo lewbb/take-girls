@@ -13,9 +13,9 @@ function authMiddleware(req, res, next) {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
     req.admin = payload;
     next();
- } catch (err) {
+} catch (err) {
   console.error("JWT ERROR:", err.message);
-  console.error("JWT_SECRET definida?", !!process.env.JWT_SECRET);
+  console.error("JWT_SECRET:", process.env.JWT_SECRET);
 
   return res.status(401).json({
     erro: "Token inválido ou expirado."
