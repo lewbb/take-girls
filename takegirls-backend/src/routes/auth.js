@@ -7,7 +7,7 @@ const router = express.Router();
 
 
 // POST /api/auth/login
-router.post('/login', auth, async (req, res) => {
+router.post('/login', async (req, res) => {
  let { telefone, senha } = req.body;
 
 telefone = telefone.replace(/\D/g, '');
