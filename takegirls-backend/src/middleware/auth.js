@@ -21,5 +21,6 @@ function authMiddleware(req, res, next) {
     erro: "Token inválido ou expirado."
   });
 }
+}
 
 module.exports = authMiddleware;
