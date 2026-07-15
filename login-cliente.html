@@ -165,6 +165,8 @@
 <div class="admin-link" style="margin-top: 1rem;">
   Quer apenas conhecer a loja?
 <a href="index.html" onclick="sessionStorage.setItem('permitirLoja','true')">
+  Entrar sem cadastro →
+</a>
 </div>
   </div>
 
@@ -174,7 +176,7 @@
   <h2 id="nomeLogado"></h2>
   <p id="telLogado"></p>
 
-  <a href="index.html" style="display:block; text-decoration:none;">
+  <a href="index.html" onclick="sessionStorage.setItem('permitirLoja','true')" style="display:block; text-decoration:none;">
     <button class="btn-main" style="margin-bottom: .75rem;">
       VER A LOJA →
     </button>

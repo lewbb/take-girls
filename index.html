@@ -155,9 +155,7 @@
 <body>
 
 <script>
-const entrou = sessionStorage.getItem("permitirLoja");
-
-if (!entrou) {
+if (!sessionStorage.getItem("permitirLoja")) {
   window.location.href = "login-cliente.html";
 }
 </script>
