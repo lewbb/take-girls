@@ -190,7 +190,7 @@ router.patch('/:id/estoque', auth, async (req, res) => {
 });
 
 // ── DELETE /api/produtos/:id — excluir (admin) ───────────────
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     await pool.query(
       'DELETE FROM produtos WHERE id=$1',
