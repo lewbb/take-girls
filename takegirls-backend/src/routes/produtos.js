@@ -13,7 +13,7 @@ const validarProduto = [
 ];
 
 // ── GET /api/produtos — lista pública (para o site) ──────────
-router.get('/', auth,async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const { categoria, status, destaque, busca } = req.query;
     let query = `
