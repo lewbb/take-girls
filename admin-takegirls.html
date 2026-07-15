@@ -270,7 +270,7 @@
       </div>
       <div class="form-group">
         <label>Emoji</label>
-        <input type="text" id="prodEmoji" placeholder="🔥" maxlength="4">
+        <input type="file" id="prodFotos" accept="image/*" multiple>
       </div>
     </div>
     <div class="form-row">
@@ -392,15 +392,16 @@ async function login() {
   err.textContent = '';
 
 
-  try {
-    const r = await fetch(`${API}/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-  telefone: usuario,
-  senha: senha
-})
-    });
+try {
+  const r = await fetch(`${API}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      telefone: usuario,
+      senha: senha
+    })
+  });
+
     const d = await r.json();
     if (!r.ok) throw new Error(d.erro || 'Credenciais inválidas');
     token = d.token;
@@ -470,9 +471,9 @@ function renderProdutos() {
 
   const tbody = document.getElementById('tabelaProdutos');
   tbody.innerHTML = filtrados.map(p => {
-    const imgHtml = p.imagem_url
-      ? `<img src="${API}${p.imagem_url}" alt="${p.nome}" style="width:100%;height:100%;object-fit:cover;border-radius:6px">`
-      : `<span class="no-img">${p.emoji || '👗'}</span>`;
+const imgHtml = p.imagem_url
+  ? `<img src="${API.replace('/api','')}/${p.imagem_url.replace('\\','/')}" alt="${p.nome}" style="width:100%;height:100%;object-fit:cover;border-radius:6px">`
+  : `<span class="no-img">${p.emoji || '👗'}</span>`;
 
     const precoHtml = p.preco_promo
       ? `<span class="old-price">R$ ${fmt(p.preco)}</span><br><span class="promo-price">R$ ${fmt(p.preco_promo)}</span>`
@@ -517,7 +518,6 @@ function abrirModalProduto(p = null) {
   document.getElementById('modalTitle').textContent = p ? 'Editar Produto' : 'Novo Produto';
   document.getElementById('prodId').value         = p?.id || '';
   document.getElementById('prodNome').value       = p?.nome || '';
-  document.getElementById('prodEmoji').value      = p?.emoji || '';
   document.getElementById('prodCat').value        = p?.categoria || 'Sets';
   document.getElementById('prodStatus').value     = p?.status || 'ativo';
   document.getElementById('prodPreco').value      = p?.preco || '';
@@ -535,20 +535,37 @@ function editarProduto(id) {
 
 async function salvarProduto() {
   const id = document.getElementById('prodId').value;
-  const body = {
-    nome:        document.getElementById('prodNome').value,
-    emoji:       document.getElementById('prodEmoji').value,
-    categoria:   document.getElementById('prodCat').value,
-    status:      document.getElementById('prodStatus').value,
-    preco:       parseFloat(document.getElementById('prodPreco').value),
-    preco_promo: document.getElementById('prodPrecoPromo').value ? parseFloat(document.getElementById('prodPrecoPromo').value) : null,
-    estoque:     parseInt(document.getElementById('prodEstoque').value),
-    badge:       document.getElementById('prodBadge').value,
-    tamanhos: document.getElementById("prodTamanhos").value
-  .split(",")
-  .map(t => t.trim())
-  };
 
+  const body = new FormData();
+
+  body.append('nome', document.getElementById('prodNome').value);
+  body.append('categoria', document.getElementById('prodCat').value);
+  body.append('status', document.getElementById('prodStatus').value);
+  body.append('preco', parseFloat(document.getElementById('prodPreco').value));
+  
+  body.append(
+    'preco_promo',
+    document.getElementById('prodPrecoPromo').value 
+      ? parseFloat(document.getElementById('prodPrecoPromo').value) 
+      : ''
+  );
+
+  body.append('estoque', parseInt(document.getElementById('prodEstoque').value));
+  body.append('badge', document.getElementById('prodBadge').value);
+
+  const tamanhos = document.getElementById("prodTamanhos").value
+    .split(",")
+    .map(t => t.trim());
+
+  body.append('tamanhos', JSON.stringify(tamanhos));
+
+
+  const fotos = document.getElementById('prodFotos').files;
+
+  for (const foto of fotos) {
+    body.append('foto', foto);
+  }
+  
   // Modo demo: só atualiza o array local
   if (token === 'demo-token') {
     if (id) {
@@ -571,11 +588,13 @@ async function salvarProduto() {
 
     console.log("Token:", token);
 
-    const r = await fetch(url, {
-      method,
-      headers: { 'Content-Type':'application/json', Authorization:`Bearer ${token}` },
-      body: JSON.stringify(body)
-    });
+const r = await fetch(url, {
+  method,
+  headers: { 
+    Authorization:`Bearer ${token}` 
+  },
+  body: body
+});
     if (!r.ok) throw new Error();
     fecharModal('modalProduto');
     await carregarProdutos();
