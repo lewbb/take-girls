@@ -2,6 +2,10 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const { pool } = require('../db');
 const auth = require('../middleware/auth');
+const multer = require('multer');
+const upload = multer({
+  dest: 'uploads/'
+});
 
 const router = express.Router();
 
@@ -95,15 +99,21 @@ router.get('/:id', auth, async (req, res) => {
 });
 
 // ── POST /api/produtos — criar (admin) ───────────────────────
-router.post('/', validarProduto, async (req, res) => {
+router.post('/', auth, upload.single('foto'), validarProduto, async (req, res) => {
   const erros = validationResult(req);
   if (!erros.isEmpty()) {
     console.log("ERROS DE VALIDAÇÃO:", erros.array());
     return res.status(400).json({ erros: erros.array() });
   }
 
-  const { nome, descricao, categoria_id, preco, preco_promo,
-    estoque, tamanhos, status, destaque, badge, imagem_url } = req.body;
+const { nome, descricao, categoria_id, preco, preco_promo,
+estoque, tamanhos, status, destaque, badge } = req.body;
+
+let imagem_url = null;
+
+if (req.file) {
+  imagem_url = req.file.path;
+}
 
   try {
     const { rows } = await pool.query(
@@ -139,8 +149,8 @@ router.put('/:id', auth, validarProduto, async (req, res) => {
   const erros = validationResult(req);
   if (!erros.isEmpty()) return res.status(400).json({ erros: erros.array() });
 
-  const { nome, descricao, categoria_id, preco, preco_promo,
-    estoque, tamanhos, status, destaque, badge, imagem_url } = req.body;
+const { nome, descricao, categoria_id, preco, preco_promo,
+estoque, tamanhos, status, destaque, badge } = req.body;
 
   try {
     const { rows } = await pool.query(
